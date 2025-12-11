@@ -1,0 +1,291 @@
+html, body {
+  height: auto;
+  overflow: auto !important;
+}
+
+body {
+    margin: 0;
+    background-image: url("../img/eidolon.png");
+    background-repeat: no-repeat;
+    background-size: cover;
+    font-family: 'Press Start 2P', cursive !important;
+}
+
+#loading-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(255, 255, 255, 0.9); /* bisa kamu ubah sesuai tema */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+  transition: opacity 0.5s ease;
+}
+
+#loading-overlay.fade-out {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.main-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    min-height: 100vh;         /* <--- ganti dari height ke min-height */
+    box-sizing: border-box;
+    gap: 20px; /* jarak antara logo dan card */
+}
+
+.logo {
+    width: 100%;
+    height: 248px;
+    margin-bottom: 0px;
+    image-rendering: pixelated;
+}
+
+
+.profile-card {
+    display: flex;
+    gap: 30px;
+    color: black;
+    align-items: start;
+}
+
+.profile-title {
+    font-family: "UnifrakturCook", cursive;
+    font-size: 100px; 
+    color: white;
+    padding: 0;
+    margin: 0;
+
+}
+
+.avatar-section {
+    display: flex;
+    width: 250px;
+    height: 250px;
+    align-items: center;
+    background: #362f2c;
+    border: 4px solid #d4af4d;
+    border-radius: 30px;
+    /* box-shadow: 4px 4px 0 #d4af4d; */
+    margin: 0 auto;
+}
+
+.grid-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr; /* dua kolom dengan lebar sama */
+    gap: 5px; /* jarak antar item (opsional) */
+    width: 100%; /* atau max-width: 500px, sesuai kebutuhan */
+    padding-bottom: 10px;
+    place-items: center;
+}
+
+.wequip-container {
+    display: grid;
+    grid-template-columns: 2fr 1fr; /* dua kolom dengan lebar sama */
+    gap: 5px; /* jarak antar item (opsional) */
+    width: 100%; /* atau max-width: 500px, sesuai kebutuhan */
+    padding-bottom: 10px;
+}
+
+.equipment-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr; /* dua kolom dengan lebar sama */
+    gap: 5px; /* jarak antar item (opsional) */
+    width: 100%; /* atau max-width: 500px, sesuai kebutuhan */
+    padding-bottom: 10px;
+    place-items: center;
+}
+
+.item {
+    padding: 1rem;
+    text-align: center;
+    color: white;
+}
+
+.avatar {
+    background: #000;
+    image-rendering: pixelated;
+    background-image: url('https://i.ibb.co/Y8tJkLk/avatar-pixel.png'); /* ganti URL ini dengan pixel avatar kamu */
+    background-size: cover;
+    border: 4px solid #000;
+    border-radius: 8px;
+}
+
+.level {
+    padding: 10px;
+    font-size: 20px;
+    text-align: right;
+    color: white;
+}
+
+.name {
+    padding: 20px 10px;
+    background: #362f2c;
+    border: 4px solid #d4af4d;
+    border-radius: 30px;
+    /* box-shadow: 2px 2px 0 #d4af4d; */
+    font-size: 20px;
+    text-align: center;
+    color: white;
+    text-wrap: nowrap;
+}
+
+.stat-section {
+    background: #362f2c;
+    border: 4px solid #d4af4d;
+    border-radius: 30px;
+    padding: 10px;
+    /* box-shadow: 4px 4px 0 black; */
+    width: 400px;
+    color: white;
+}
+
+.stat-title {
+    background: #d4af4d;
+    text-align: center;
+    padding: 6px;
+    border-radius: 30px;
+    margin-bottom: 12px;
+    font-size: 20px;
+    color: black;
+}
+
+.stat-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 15px 0;
+    font-size: 17px;
+}
+
+.stat-row span:first-child {
+    text-align: left;
+}
+
+.box-pixel {
+    margin-top: 14px;
+    padding: 8px;
+    background: #362f2c;
+    border: 4px solid #d4af4d;
+    border-radius: 30px;
+    text-align: center;
+    /* box-shadow: 2px 2px 0 black; */
+    font-size: 30px;
+    color: white;
+}
+
+.wequip-box {
+margin-top: 14px;
+    padding: 8px;
+    background: #d4af4d;
+    border: 4px solid black;
+    border-radius: 30px;
+    text-align: center;
+    /* box-shadow: 2px 2px 0 black; */
+    font-size: 20px;
+}
+
+.wequip-box-edit {
+margin-top: 14px;
+    padding: 8px;
+    background: #2995c1;
+    border: 4px solid black;
+    border-radius: 30px;
+    text-align: center;
+    box-shadow: 2px 2px 0 black;
+    font-size: 20px;
+    cursor: pointer;
+}
+
+.skill-records {
+    padding: 4px;
+    height:150px;
+    width: 150px;
+    background: #362f2c;
+    border: 4px solid #d4af4d;
+    border-radius: 30px;
+    /* box-shadow: 2px 2px 0 black; */
+    font-size: 20px;
+    text-align: center;
+}
+
+.box-equip {
+    height:90px;
+    width: 90px;
+    background: #362f2c;
+    border: 4px solid #d4af4d;
+    /* box-shadow: 2px 2px 0 black; */
+    font-size: 20px;
+    text-align: center;
+}
+
+.avatar-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.wequip-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+@media (max-width: 768px) {
+    .main-container{
+        gap: 0px;
+    }
+    .profile-title{
+        font-size: 50px;
+        margin-top: 75px;
+    }
+
+    .profile-card {
+        flex-direction: column;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .stat-section, .wequip-container, .grid-container, .equipment-container {
+        max-width: 320px;
+    }
+
+    .wequip-container {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .equipment-container {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .avatar-section {
+        width: 200px;
+        height: 200px;
+    }
+
+    .skill-records, .box-equip {
+        width: 100px;
+        height: 100px;
+    }
+
+    .name, .level, .box-pixel {
+        font-size: 16px;
+    }
+
+    .stat-row {
+        font-size: 15px;
+    }
+
+    .stat-title {
+        font-size: 18px;
+    }
+
+    .wequip-box, .wequip-box-edit {
+        font-size: 16px;
+    }
+}

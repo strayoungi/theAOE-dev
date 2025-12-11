@@ -1,0 +1,318 @@
+html, body {
+    height: 100vh;
+    overflow: hidden;
+}
+body {
+    margin: 0;
+    background-image: url("../img/eidolon.png");
+    background-repeat: no-repeat;
+    background-size: cover;
+    font-family: 'Press Start 2P', cursive;
+    color: #fff;
+}
+.container {
+  padding: 20px;
+}
+.top-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+  background-color: #362f2c;
+  border: 4px solid #d4af4d;
+  border-radius: 30px;
+  padding: 10px;
+}
+.info-player {
+    display: flex;
+    align-items: center;
+    flex-direction: row !important;
+}
+.avatar {
+    width: 60px;
+    height: 60px;
+    margin-right: 10px;
+}
+.player-name {
+    font-size: 15px;
+    line-height: 1.4;
+}
+.col-player{
+    font-size: 15px;
+    line-height: 1.4;
+    text-align: right;
+}
+.page-title {
+    font-size: 28px;
+    background: #d0b06a;
+    color: #362f2c;
+    padding: 10px 20px;
+    border: 2px solid #000;
+    border-radius: 20px;
+}
+.nav-tabs {
+  list-style: none;
+  padding: 0;
+  display: flex;
+  gap: 10px;
+  margin-left: 25px;
+  border-bottom: none;
+}
+.nav-link-blacksmith {
+  text-decoration: none;
+  padding: 10px 20px;
+  display: inline-block;
+  background: #333;
+  color: #fff;
+  border-radius: 5px;
+  border: 2px solid transparent;
+  transition: all 0.2s ease;
+}
+.nav-link-blacksmith.active {
+    background: #d4af4d;
+    color: #000;
+    border: 2px solid #fff;
+    transform: translateY(-8px); /* naik ke atas */
+    box-shadow: 0 5px 10px rgba(0,0,0,0.3);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.tab-content {
+  background: #333;
+  border: 4px solid #d4af4d;
+  padding: 10px 20px;
+  border-radius: 30px;
+  overflow-y: auto;
+  height: 70vh;
+}
+
+.scroll-arrow {
+  position: absolute;
+  bottom: 5px; /* muncul sedikit di bawah border */
+  left: 50%;
+  transform: translateX(-50%);
+  width: 35px;  /* atur sesuai ukuran image */
+  height: auto;
+  z-index: 1;
+}
+
+.tab-pane {
+  display: none;
+}
+.tab-pane.active.show {
+  display: flex;
+  flex-direction: column;
+}
+.tab-content::-webkit-scrollbar {
+      display: none;
+}
+.tab-content {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+.wequip-list {
+    display: flex;
+    flex-wrap: wrap;           /* Agar bisa pindah ke baris berikutnya */
+    gap: 20px;                 /* Jarak antar box */
+}
+
+.wequip-box {
+    flex: 1 1 calc(33.333% - 20px); /* 3 per baris, dikurangi gap */
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+    background: #d4af4d;
+    padding: 8px;
+    border-radius: 10px;
+    color: #362f2c;
+}
+.photo-info .desc-item{
+    display: flex;
+    flex-direction: column;
+}
+
+.photo-info{
+    text-align: center;
+}
+.cost-add{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    font-size: 15px;
+}
+.item-name{
+    font-size: 15px;
+    text-decoration: underline;
+}
+.item-desc{
+    font-size: 10px;
+}
+.item-max{
+    font-size: 10px;
+}
+
+.star-ratings{
+    display: inline-flex;
+}
+
+.photo-item{
+    height: 80px;
+    width: 80px;
+}
+
+.star-photo{
+    height: 20px;
+    width: 20px;
+}
+
+.cost-item{
+    padding: 5px;
+}
+
+.right-buttons .btn {
+    font-family: 'Press Start 2P', cursive;
+    font-size: 10px;
+    padding: 6px 10px;
+    border: 2px solid #362f2c;
+    border-radius: 10px;
+    color: #362f2c;
+}
+
+.button-blacksmith{
+    color: white !important; 
+    font-size: 20px !important;
+}
+
+ /* Popup overlay */
+.popup {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.6);
+    z-index: 1000;
+}
+
+/* Popup content */
+.popup-content {
+    position: absolute;
+    top: 60%;
+    right: 8%;
+    transform: translateY(-50%);
+    background-color: #333;
+    border: 4px solid #d4af4d;
+    border-radius: 30px;
+    color: white;
+    padding: 20px;
+    text-align: center;
+    height: 75vh;
+    width: 70vh;
+}
+
+/* Close button */
+.close-btn {
+    background-color: crimson;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    margin-top: 10px;
+    cursor: pointer;
+    border-radius: 5px;
+}
+@media (max-width: 768px) {
+    .container {
+        margin: 10px 10px;
+        padding: 10px;
+    }
+
+    .top-container {
+        flex-direction: column;
+        gap: 5px;
+        text-align: center;
+        margin-right: 10px;
+    }
+
+    .info-player {
+        justify-content: center;
+    }
+
+    .page-title {
+        font-size: 20px;
+        padding: 8px 16px;
+    }
+
+    .col-player {
+        text-align: center;
+        font-size: 12px;
+    }
+
+    .nav-tab-wrapper {
+        display: block !important;
+    }
+
+    .nav-tabs {
+        gap: 5px;
+        margin-left: 0;
+        align-items: center;
+        margin-bottom: 5px;
+        justify-content: center;
+    }
+
+    .nav-link-blacksmith {
+        text-align: center;
+        font-size: 12px;
+        padding: 8px;
+    }
+    
+    .tab-content {
+        margin-right: 10px;
+        height: 48vh;
+    }
+
+    .wequip-list {
+        flex-direction: column;
+    }
+
+    .wequip-box {
+        flex: 1 1 100%;
+        align-items: center;
+    }
+
+    .photo-item {
+        width: 60px;
+        height: 60px;
+    }
+
+    .item-name {
+        font-size: 12px;
+    }
+
+    .item-desc,
+    .item-max {
+        font-size: 7px;
+    }
+
+    .cost-add {
+        gap: 5px;
+    }
+
+    .cost-item {
+        padding: 2px;
+        font-size: 10px;
+    }
+
+    .right-buttons{
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+        margin-bottom: 5px;
+    }
+
+    .button-blacksmith{
+        color: white !important; 
+        font-size: 10px !important;
+    }
+}
