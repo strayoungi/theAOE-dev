@@ -20,7 +20,7 @@ html, body {
 
 body {
   background-image: url("/img/eidolon.png");
-  background-repeat: no-repeat;
+  background-repeat: repeat;
   background-size: cover;
   font-family: 'Press Start 2P', cursive !important;
 }
@@ -456,12 +456,18 @@ width: 100%;
         </div>
 
       <!-- BIG BUTTON = span 2 rows -->
-      <div class="box pixel-btn" style="grid-row: span 2;">Masuk Dunia</div>
+      <div class="box pixel-btn" id="masukDunia" style="grid-row: span 2;">Masuk Dunia</div>
 
     </div>
 
   </div>
 </div>
+<script>
+  document.getElementById("masukDunia").addEventListener("click", enterMap);
 
+  function enterMap() {
+      window.location.href = 'map.html';
+    }
+</script>
 </body>
 </html>
