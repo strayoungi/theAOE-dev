@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Clickable SVG Nodes with Modal</title>
+
+<style>
+    html, body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+    }
+
+    body {
+        background-image: url('img/eidolon.png');
+        background-repeat: repeat;
+        background-size: 100% 100%;
+        background-position: center;
+    }
+
+    .wrapper {
+        position: relative;
+        width: 100vw;
+        height: 100vh;
+    }
+
+    #title {
+        position: absolute;
+        top: 20px;
+        left: 20px;
+        font-size: 22px;
+        font-weight: bold;
+        background: rgba(255,255,255,0.7);
+        padding: 6px 10px;
+        border-radius: 4px;
+    }
+
+    /* --- MODAL --- */
+    #modalOverlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,0.7);
+        display: none;
+        justify-content: center;
+        align-items: center;
+        z-index: 1000;
+    }
+
+    #modalBox {
+        background: white;
+        color: black;
+        width: 300px;
+        padding: 20px;
+        border-radius: 10px;
+        text-align: center;
+        position: relative;
+    }
+
+    #modalBox h2 {
+        margin: 0 0 10px 0;
+    }
+
+    #closeModal {
+        position: absolute;
+        right: 10px;
+        top: 10px;
+        cursor: pointer;
+        font-weight: bold;
+        font-size: 18px;
+    }
+
+    .node { cursor: pointer; }
+</style>
+</head>
+
+<body>
+<div class="wrapper">
+    <div id="title">Zona 1</div>
+
+    <div class="min-h-screen bg-black flex items-center justify-center p-8">
+      <svg viewBox="0 0 400 500" class="w-full max-w-md h-auto">
+        <g stroke="white" stroke-width="2" fill="none">
+          <line x1="200" y1="60" x2="200" y2="110" />
+          <line x1="180" y1="130" x2="90" y2="230" />
+          <line x1="220" y1="130" x2="310" y2="230" />
+          <line x1="80" y1="250" x2="80" y2="320" />
+          <line x1="310" y1="250" x2="310" y2="320" />
+          <line x1="90" y1="350" x2="180" y2="420" />
+          <line x1="300" y1="350" x2="220" y2="420" />
+        </g>
+
+        <!-- Nodes -->
+
+        <!-- Top hexagon -->
+        <polygon class="node" data-id="hexagon-top"
+          points="200,20 220,30 220,50 200,60 180,50 180,30"
+          fill="white"
+        />
+
+        <!-- Center labeled rectangle -->
+        <rect class="node" data-id="story-center"
+          x="170"
+          y="110"
+          width="60"
+          height="40"
+          rx="20"
+          fill="#d4a017"
+        />
+
+        <!-- Left circle -->
+        <circle class="node" data-id="circle-left" cx="80" cy="240" r="25" fill="#ff6b6b" />
+
+        <!-- Right circle -->
+        <circle class="node" data-id="circle-right" cx="310" cy="240" r="25" fill="#ff6b6b" />
+
+        <!-- Bottom left circle -->
+        <circle class="node" data-id="circle-bottom-left" cx="80" cy="340" r="25" fill="#ff6b6b" />
+
+        <!-- Bottom right diamond -->
+        <polygon class="node" data-id="diamond-bottom-right"
+          points="310,310 335,335 310,360 285,335"
+          fill="#e6c300"
+        />
+
+        <!-- Final bottom circle -->
+        <circle class="node" data-id="circle-final" cx="200" cy="440" r="30" fill="#4ecdc4" />
+      </svg>
+    </div>
+</div>
+
+<!-- ===== MODAL ELEMENT ===== -->
+<div id="modalOverlay">
+    <div id="modalBox">
+        <div id="closeModal">✕</div>
+        <h2 id="modalTitle">Node Title</h2>
+        <p id="modalDesc">Deskripsi node akan muncul di sini.</p>
+        <button>Enter</button>
+        <button>Cancel</button>
+    </div>
+</div>
+
+<script>
+    // Deskripsi tiap node
+    const nodeDescriptions = {
+        "hexagon-top": {
+            title: "Hexagon Atas",
+            desc: "Ini adalah node awal dari Zona 1."
+        },
+        "story-center": {
+            title: "Story Center",
+            desc: "Node ini berisi inti cerita atau event utama."
+        },
+        "circle-left": {
+            title: "Node Kiri",
+            desc: "Node ini merepresentasikan cabang cerita bagian kiri."
+        },
+        "circle-right": {
+            title: "Node Kanan",
+            desc: "Node ini adalah cabang cerita bagian kanan."
+        },
+        "circle-bottom-left": {
+            title: "Node Kiri Bawah",
+            desc: "Node ini adalah lanjutan dari cabang kiri."
+        },
+        "diamond-bottom-right": {
+            title: "Diamond Kanan Bawah",
+            desc: "Node ini adalah jalur alternatif dengan kondisi tertentu."
+        },
+        "circle-final": {
+            title: "Node Final",
+            desc: "Ini adalah titik akhir atau hasil dari beberapa jalur cerita."
+        }
+    };
+
+    const modalOverlay = document.getElementById("modalOverlay");
+    const modalTitle = document.getElementById("modalTitle");
+    const modalDesc = document.getElementById("modalDesc");
+    const closeModal = document.getElementById("closeModal");
+
+    // Ambil semua node
+    document.querySelectorAll(".node").forEach(node => {
+        node.addEventListener("click", () => {
+            const id = node.dataset.id;
+
+            // Isi modal
+            modalTitle.textContent = nodeDescriptions[id].title;
+            modalDesc.textContent = nodeDescriptions[id].desc;
+
+            // Tampilkan modal
+            modalOverlay.style.display = "flex";
+        });
+    });
+
+    // Tutup modal
+    closeModal.addEventListener("click", () => {
+        modalOverlay.style.display = "none";
+    });
+
+    // Klik area blackout untuk tutup
+    modalOverlay.addEventListener("click", (e) => {
+        if (e.target === modalOverlay) {
+            modalOverlay.style.display = "none";
+        }
+    });
+</script>
+
+</body>
+</html>
