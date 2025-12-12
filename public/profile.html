@@ -388,6 +388,24 @@ width: 100%;
     padding-top: 10px;
     padding-bottom: 10px;
   }
+
+  .tutorial-overlay{
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    align-items: flex-start; /* biar mulai dari atas */
+    padding: 16px 0;
+  }
+
+  .tutorial-content {
+    position: fixed;
+    left: 50% !important;
+    bottom: 20px;
+    top: auto !important;
+    transform: translateX(-50%);
+    width: calc(100% - 32px);
+    max-width: 420px;
+    z-index: 10000;
+  }
 }
 
 @media (max-width: 400px) {
@@ -636,65 +654,75 @@ width: 100%;
       prevBtn.style.display = 'none';
       nextBtn.textContent = 'Lanjut';
     } else {
-      // Normal steps
-      highlightBox.style.display = 'block';
-      tutorialContent.style.transform = 'none';
-      document.getElementById('intro-title').style.display = 'none';
-      document.getElementById('intro-desc').style.display = 'none';
-      const step = tutorialSteps[currentStep];
-      const element = document.querySelector(step.selector);
+        highlightBox.style.display = 'block';
+        document.getElementById('intro-title').style.display = 'none';
+        document.getElementById('intro-desc').style.display = 'none';
 
-      if (element) {
+        const step = tutorialSteps[currentStep];
+        const element = document.querySelector(step.selector);
+
+        if (!element) return;
+
         const rect = element.getBoundingClientRect();
+
+        // === Highlight posisi ===
         highlightBox.style.top = rect.top - 10 + 'px';
         highlightBox.style.left = rect.left - 10 + 'px';
         highlightBox.style.width = rect.width + 20 + 'px';
         highlightBox.style.height = rect.height + 20 + 'px';
 
-        // Position tutorial content to the right of the highlight
-        let contentLeft = rect.right + 20;
-        let contentTop = rect.top;
-        const contentWidth = 420;
-        const contentHeight = 300;
+        tutorialText.innerHTML = step.text;
 
-        // If not enough space on the right, try left
-        if (contentLeft + contentWidth > window.innerWidth) {
-          contentLeft = rect.left - contentWidth - 20;
-        }
+        prevBtn.style.display = currentStep > 0 ? 'inline-block' : 'none';
+        nextBtn.textContent =
+            currentStep < tutorialSteps.length - 1 ? 'Lanjut' : 'Selesai';
 
-        // If still not, or left is negative, position above or below
-        if (contentLeft < 0 || contentLeft + contentWidth > window.innerWidth) {
-          contentLeft = Math.max(10, rect.left - 50);
-          contentTop = rect.bottom + 20;
-          if (contentTop + contentHeight > window.innerHeight) {
-            contentTop = rect.top - contentHeight - 20;
-          }
-        }
-
-        tutorialContent.style.top = contentTop + 'px';
-        tutorialContent.style.left = contentLeft + 'px';
-
-        // Auto-scroll if popup is out of view on mobile
+        /* ===============================
+            📱 MOBILE BEHAVIOR
+            =============================== */
         if (window.innerWidth <= 768) {
-          const container = document.querySelector('.container');
-          const popupBottom = contentTop + 300;
-          const popupTop = contentTop;
-          if (popupBottom > window.innerHeight) {
-            const delta = popupBottom - window.innerHeight + 50;
-            container.scrollTo({ top: container.scrollTop + delta, behavior: 'smooth' });
-          }
-          if (popupTop < 0) {
-            const delta = popupTop - 50;
-            container.scrollTo({ top: container.scrollTop + delta, behavior: 'smooth' });
-          }
+            const container = document.querySelector('.container');
+            const popupHeight = 260; // kira2 tinggi tutorial popup
+            const elementCenter =
+            element.offsetTop - container.clientHeight / 2 + rect.height / 2;
+
+            // Scroll supaya element di tengah layar
+            container.scrollTo({
+            top: elementCenter,
+            behavior: 'smooth'
+            });
+
+            // Pastikan highlight TIDAK ketutup popup
+            setTimeout(() => {
+            const highlightBottom = rect.top + rect.height;
+            const popupTop = window.innerHeight - popupHeight - 20;
+
+            if (highlightBottom > popupTop) {
+                container.scrollBy({
+                top: highlightBottom - popupTop + 20,
+                behavior: 'smooth'
+                });
+            }
+            }, 300);
+
+        } 
+        /* ===============================
+            🖥️ DESKTOP BEHAVIOR (lama)
+            =============================== */
+        else {
+            const contentWidth = 420;
+            let contentLeft = rect.right + 20;
+            let contentTop = rect.top;
+
+            if (contentLeft + contentWidth > window.innerWidth) {
+            contentLeft = rect.left - contentWidth - 20;
+            }
+
+            tutorialContent.style.top = contentTop + 'px';
+            tutorialContent.style.left = contentLeft + 'px';
         }
-      }
-
-      tutorialText.innerHTML = step.text;
-
-      prevBtn.style.display = currentStep > 0 ? 'inline-block' : 'none';
-      nextBtn.textContent = currentStep < tutorialSteps.length - 1 ? 'Lanjut' : 'Selesai';
     }
+
   }
 
   document.getElementById('tutorial-next').addEventListener('click', () => {
