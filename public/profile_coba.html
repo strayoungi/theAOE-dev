@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ashes of Elysia</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+
+<style>
+/* ================= BASE ================= */
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  overflow: hidden;
+  font-family: 'Press Start 2P', cursive;
+  background: #1b1b1b;
+  color: white;
+}
+
+.container {
+  height: 100vh;
+  overflow-y: auto;
+  padding: 20px;
+}
+
+/* ================= CONTENT ================= */
+.section {
+  margin: 60px 0;
+  padding: 40px;
+  background: #362f2c;
+  border: 4px solid #d4af4d;
+  border-radius: 20px;
+}
+
+/* ================= TUTORIAL OVERLAY ================= */
+.tutorial-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  z-index: 9999;
+}
+
+/* ================= HIGHLIGHT ================= */
+.highlight-box {
+  position: fixed;
+  border: 4px solid #ffcc00;
+  border-radius: 12px;
+  pointer-events: none;
+  z-index: 10000;
+  animation: pulse 1s infinite;
+}
+
+@keyframes pulse {
+  0% { box-shadow: 0 0 0 #ffcc00; }
+  50% { box-shadow: 0 0 12px #ffcc00; }
+  100% { box-shadow: 0 0 0 #ffcc00; }
+}
+
+/* ================= BOTTOM SHEET ================= */
+.tutorial-content {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+
+  background: #362f2c;
+  border-top: 4px solid #d4af4d;
+  border-radius: 24px 24px 0 0;
+
+  padding: 20px;
+  transform: translateY(100%);
+  transition: transform 0.3s ease-out;
+  z-index: 10001;
+}
+
+.tutorial-content.show {
+  transform: translateY(0);
+}
+
+.tutorial-content p {
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+.tutorial-actions {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 20px;
+}
+
+button {
+  font-family: inherit;
+  font-size: 10px;
+  padding: 10px 16px;
+  background: #8B1E13;
+  border: 3px solid black;
+  border-radius: 10px;
+  color: white;
+  cursor: pointer;
+}
+
+/* ================= DESKTOP ================= */
+@media (min-width: 769px) {
+  .tutorial-content {
+    width: 400px;
+    left: auto;
+    right: auto;
+    border-radius: 20px;
+    transform: none;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+  <div class="section stats-box">📊 STATS</div>
+  <div class="section avatar-section">🧙 AVATAR</div>
+  <div class="section companion-box">🐺 COMPANIONS</div>
+  <div class="section orb-grid">🔮 ORBS</div>
+  <div class="section" id="masukDunia">🚪 MASUK DUNIA</div>
+</div>
+
+<!-- ================= TUTORIAL ================= -->
+<div class="tutorial-overlay" id="tutorial-overlay">
+  <div class="highlight-box" id="highlight-box"></div>
+
+  <div class="tutorial-content" id="tutorial-content">
+    <p id="tutorial-text"></p>
+    <div class="tutorial-actions">
+      <button id="tutorial-prev">Prev</button>
+      <button id="tutorial-next">Next</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ================= DATA ================= */
+const steps = [
+  { selector: '.stats-box', text: 'Ini adalah statistik karakter kamu.' },
+  { selector: '.avatar-section', text: 'Ini avatar karakter kamu.' },
+  { selector: '.companion-box', text: 'Companions akan membantumu.' },
+  { selector: '.orb-grid', text: 'Orbs memberi buff & skill.' },
+  { selector: '#masukDunia', text: 'Masuk ke dunia petualangan.' }
+];
+
+let current = 0;
+
+/* ================= INIT ================= */
+showStep();
+
+/* ================= FUNCTIONS ================= */
+function showStep() {
+  const step = steps[current];
+  const el = document.querySelector(step.selector);
+  if (!el) return;
+
+  document.getElementById('tutorial-text').innerHTML = step.text;
+
+  el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+  setTimeout(() => {
+    positionHighlight(el);
+    document.getElementById('tutorial-content').classList.add('show');
+  }, 300);
+}
+
+function positionHighlight(el) {
+  const rect = el.getBoundingClientRect();
+  const hl = document.getElementById('highlight-box');
+
+  hl.style.top = rect.top - 8 + 'px';
+  hl.style.left = rect.left - 8 + 'px';
+  hl.style.width = rect.width + 16 + 'px';
+  hl.style.height = rect.height + 16 + 'px';
+}
+
+/* ================= BUTTONS ================= */
+document.getElementById('tutorial-next').onclick = () => {
+  if (current < steps.length - 1) {
+    current++;
+    showStep();
+  } else {
+    document.getElementById('tutorial-overlay').style.display = 'none';
+  }
+};
+
+document.getElementById('tutorial-prev').onclick = () => {
+  if (current > 0) {
+    current--;
+    showStep();
+  }
+};
+</script>
+
+</body>
+</html>
