@@ -111,6 +111,14 @@ body {
     justify-content: center;
     align-items: center;
     gap: 20px;
+    flex-direction: column;
+}
+
+.first-action-section{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
 }
 
 .btn {
@@ -187,15 +195,21 @@ body {
     }
 
     .battle-screen {
-        gap: 15px;
+        gap: 10px;
         min-height: 100vh;
         height: auto;
     }
 
-    .player-section, .enemy-section {
+    .player-section{
+        flex-direction: row;
+    }
+    .enemy-section{
         flex-direction: column;
-        padding: 15px;
-        gap: 15px;
+    }
+
+    .player-section, .enemy-section {
+        padding: 10px;
+        gap: 10px;
     }
 
     .character {
@@ -223,7 +237,6 @@ body {
 
     .action-panel {
         padding: 15px;
-        flex-wrap: wrap;
         gap: 10px;
     }
 

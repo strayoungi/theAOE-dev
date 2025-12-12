@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pixel Battle UI</title>
     <link rel="stylesheet" href="css/battle.css">
 </head>
@@ -73,20 +74,26 @@
         <!-- Action Panel -->
         <div class="action-panel">
             <div class="turn-indicator">Player's Turn</div>
-            <button class="btn">Attack</button>
-            <div class="skill-card">
-                <h3>Fireball</h3>
-                <p>Deals 40 fire damage. Cost: 10 MP</p>
+            <div style="display: flex; gap: 20px;">
+                <div class="first-action-section">
+                    <button class="btn">Attack</button>
+                    <div class="skill-card">
+                        <h3>Fireball</h3>
+                        <p>Deals 40 fire damage. Cost: 10 MP</p>
+                    </div>
+                </div>
+                <div class="second-action-section">
+                    <div class="skill-card">
+                        <h3>Shadow Strike</h3>
+                        <p>Restores 30 HP (Shadow Wolf). Cost: 12 MP</p>
+                    </div>
+                    <div class="skill-card">
+                        <h3>Flame Burst</h3>
+                        <p>Boosts DEF by 10% for next turn (Fire Spirit). Cost: 10 MP</p>
+                    </div>
+                </div> 
             </div>
-            <div class="skill-card">
-                <h3>Shadow Strike</h3>
-                <p>Restores 30 HP (Shadow Wolf). Cost: 12 MP</p>
-            </div>
-            <!-- <div class="skill-card">
-                <h3>Flame Burst</h3>
-                <p>Boosts DEF by 10% for next turn (Fire Spirit). Cost: 10 MP</p>
-            </div>
-            <div class="skill-card">
+            <!--<div class="skill-card">
                 <h3>Critical Boost</h3>
                 <p>Boosts Crit Rate by 20% for next turn. Cost: 15 MP</p>
             </div>
