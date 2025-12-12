@@ -34,7 +34,6 @@ body {
   height: 100%;
   background-color: rgba(0, 0, 0, 0.5);
   z-index: 9998;
-  pointer-events: none; /* Allow scroll events to pass through */
 }
 
 .tutorial-content {
@@ -48,7 +47,6 @@ body {
   text-align: center;
   z-index: 9999;
   font-size: 12px; /* Default font size */
-  pointer-events: auto; /* Enable interactions on popup */
 }
 
 .tutorial-content h2 {
@@ -675,6 +673,21 @@ width: 100%;
 
         tutorialContent.style.top = contentTop + 'px';
         tutorialContent.style.left = contentLeft + 'px';
+
+        // Auto-scroll if popup is out of view on mobile
+        if (window.innerWidth <= 768) {
+          const container = document.querySelector('.container');
+          const popupBottom = contentTop + 300;
+          const popupTop = contentTop;
+          if (popupBottom > window.innerHeight) {
+            const delta = popupBottom - window.innerHeight + 50;
+            container.scrollTo({ top: container.scrollTop + delta, behavior: 'smooth' });
+          }
+          if (popupTop < 0) {
+            const delta = popupTop - 50;
+            container.scrollTo({ top: container.scrollTop + delta, behavior: 'smooth' });
+          }
+        }
       }
 
       tutorialText.innerHTML = step.text;
