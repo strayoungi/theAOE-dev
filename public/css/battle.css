@@ -18,7 +18,6 @@ body {
     width: 100%;
     max-width: 1200px;
     height: auto;
-    min-height: 90vh;
 }
 .enemy-container{
     display: flex;
@@ -26,6 +25,10 @@ body {
     gap: 20px;
     justify-content: center;
     align-items: center;
+}
+
+.player-section {
+    flex:0;
 }
 
 .player-section, .enemy-section {
