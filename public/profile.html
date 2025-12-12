@@ -544,199 +544,216 @@ width: 100%;
   </div>
 </div>
 <script>
-  document.addEventListener('DOMContentLoaded', function() {
-    const overlay = document.getElementById('loading-overlay');
-    const loadingBar = document.getElementById('loading-bar');
-    const images = document.querySelectorAll('img');
-    let loadedCount = 0;
-    const totalImages = images.length;
+/* =======================
+   LOADING ASSETS
+======================= */
+document.addEventListener('DOMContentLoaded', function () {
+  const overlay = document.getElementById('loading-overlay');
+  const loadingBar = document.getElementById('loading-bar');
+  const images = document.querySelectorAll('img');
+  let loadedCount = 0;
+  const totalImages = images.length;
 
-    if (totalImages === 0) {
-      overlay.style.display = 'none';
-      return;
-    }
+  if (totalImages === 0) {
+    overlay.style.display = 'none';
+    showTutorial();
+    return;
+  }
 
-    images.forEach(img => {
-      if (img.complete) {
+  images.forEach(img => {
+    if (img.complete) {
+      loadedCount++;
+      updateProgress();
+    } else {
+      img.addEventListener('load', () => {
         loadedCount++;
         updateProgress();
-      } else {
-        img.addEventListener('load', () => {
-          loadedCount++;
-          updateProgress();
-        });
-        img.addEventListener('error', () => {
-          loadedCount++;
-          updateProgress();
-        });
-      }
+      });
+      img.addEventListener('error', () => {
+        loadedCount++;
+        updateProgress();
+      });
+    }
+  });
+
+  function updateProgress() {
+    const progress = (loadedCount / totalImages) * 100;
+    loadingBar.style.width = progress + '%';
+
+    if (loadedCount === totalImages) {
+      setTimeout(() => {
+        overlay.style.display = 'none';
+        showTutorial();
+      }, 500);
+    }
+  }
+});
+
+/* =======================
+   TUTORIAL DATA
+======================= */
+let currentStep = 0;
+let isIntro = true;
+
+const tutorialSteps = [
+  {
+    selector: '.stats-box',
+    text: '<strong>Stats:</strong> Ini adalah statistik karakter Anda.'
+  },
+  {
+    selector: '.avatar-section',
+    text: '<strong>Avatar:</strong> Klik untuk mengubah avatar.'
+  },
+  {
+    selector: '.companion-box',
+    text: '<strong>Companions:</strong> Teman petualangan Anda.'
+  },
+  {
+    selector: '.orb-grid',
+    text: '<strong>Orbs:</strong> Memberikan buff atau skill.'
+  },
+  {
+    selector: '#masukDunia',
+    text: '<strong>Masuk Dunia:</strong> Mulai petualangan!'
+  }
+];
+
+/* =======================
+   SHOW TUTORIAL
+======================= */
+function showTutorial() {
+  document.getElementById('tutorial-overlay').style.display = 'flex';
+  updateTutorialStep();
+}
+
+/* =======================
+   UPDATE STEP
+======================= */
+function updateTutorialStep() {
+  const highlightBox = document.getElementById('highlight-box');
+  const tutorialText = document.getElementById('tutorial-text');
+  const tutorialContent = document.querySelector('.tutorial-content');
+  const prevBtn = document.getElementById('tutorial-prev');
+  const nextBtn = document.getElementById('tutorial-next');
+
+  if (isIntro) {
+    tutorialContent.style.top = '50%';
+    tutorialContent.style.left = '50%';
+    tutorialContent.style.transform = 'translate(-50%, -50%)';
+
+    highlightBox.style.display = 'none';
+    document.getElementById('intro-title').style.display = 'block';
+    document.getElementById('intro-desc').style.display = 'block';
+
+    tutorialText.innerHTML = '';
+    prevBtn.style.display = 'none';
+    nextBtn.textContent = 'Lanjut';
+    return;
+  }
+
+  // ==== NORMAL STEP ====
+  document.getElementById('intro-title').style.display = 'none';
+  document.getElementById('intro-desc').style.display = 'none';
+  highlightBox.style.display = 'block';
+
+  const step = tutorialSteps[currentStep];
+  const element = document.querySelector(step.selector);
+  tutorialText.innerHTML = step.text;
+
+  prevBtn.style.display = currentStep > 0 ? 'inline-block' : 'none';
+  nextBtn.textContent = currentStep < tutorialSteps.length - 1 ? 'Lanjut' : 'Selesai';
+
+  if (!element) return;
+
+  // ===== AUTOSCROLL (MOBILE) =====
+  if (window.innerWidth <= 768) {
+    element.scrollIntoView({
+      behavior: 'smooth',
+      block: 'start'
     });
 
-    function updateProgress() {
-      const progress = (loadedCount / totalImages) * 100;
-      loadingBar.style.width = progress + '%';
-      if (loadedCount === totalImages) {
-        setTimeout(() => {
-          overlay.style.display = 'none';
-          showTutorial();
-        }, 500); // Small delay for smooth transition
-      }
-    }
+    // TUNGGU SCROLL SELESAI
+    setTimeout(() => {
+      positionHighlightAndPopup(element);
+    }, 300);
+  } else {
+    positionHighlightAndPopup(element);
+  }
+}
 
-    updateProgress(); // In case some are already loaded
-  });
+/* =======================
+   POSITION HIGHLIGHT + POPUP
+======================= */
+function positionHighlightAndPopup(element) {
+  const rect = element.getBoundingClientRect();
+  const highlightBox = document.getElementById('highlight-box');
+  const tutorialContent = document.querySelector('.tutorial-content');
 
-  let currentStep = 0;
-  let isIntro = true;
-  const tutorialSteps = [
-    {
-      selector: '.stats-box',
-      text: '<strong>Stats:</strong> Ini adalah statistik karakter Anda. Attack menentukan kekuatan serangan, Max HP adalah kesehatan maksimal, Defense melindungi dari serangan, dan Max MP adalah mana untuk skill.'
-    },
-    {
-      selector: '.avatar-section',
-      text: '<strong>Avatar:</strong> Ini adalah gambar karakter Anda. Klik untuk mengubah avatar.'
-    },
-    {
-      selector: '.companion-box',
-      text: '<strong>Companions:</strong> Ini adalah teman-teman yang membantu dalam petualangan. Klik Edit untuk mengubah companions.'
-    },
-    {
-      selector: '.orb-grid',
-      text: '<strong>Orbs:</strong> Ini adalah orbs yang memberikan buff atau skill khusus. Klik Edit untuk mengatur orbs.'
-    },
-    {
-      selector: '#masukDunia',
-      text: '<strong>Masuk Dunia:</strong> Klik tombol ini untuk memasuki dunia permainan dan mulai petualangan!'
-    }
-  ];
+  // HIGHLIGHT
+  highlightBox.style.top = rect.top - 10 + 'px';
+  highlightBox.style.left = rect.left - 10 + 'px';
+  highlightBox.style.width = rect.width + 20 + 'px';
+  highlightBox.style.height = rect.height + 20 + 'px';
 
-  function showTutorial() {
-    const tutorialOverlay = document.getElementById('tutorial-overlay');
-    tutorialOverlay.style.display = 'flex';
+  // POPUP POSITION
+  let contentLeft = rect.right + 20;
+  let contentTop = rect.top;
+
+  const contentWidth = 420;
+  const contentHeight = 300;
+
+  if (contentLeft + contentWidth > window.innerWidth) {
+    contentLeft = rect.left - contentWidth - 20;
+  }
+
+  if (contentLeft < 10) {
+    contentLeft = Math.max(10, rect.left - 50);
+    contentTop = rect.bottom + 20;
+  }
+
+  if (contentTop + contentHeight > window.innerHeight) {
+    contentTop = rect.top - contentHeight - 20;
+  }
+
+  tutorialContent.style.transform = 'none';
+  tutorialContent.style.top = contentTop + 'px';
+  tutorialContent.style.left = contentLeft + 'px';
+}
+
+/* =======================
+   BUTTON EVENTS
+======================= */
+document.getElementById('tutorial-next').addEventListener('click', () => {
+  if (isIntro) {
+    isIntro = false;
+    currentStep = 0;
+    updateTutorialStep();
+  } else if (currentStep < tutorialSteps.length - 1) {
+    currentStep++;
+    updateTutorialStep();
+  } else {
+    document.getElementById('tutorial-overlay').style.display = 'none';
+  }
+});
+
+document.getElementById('tutorial-prev').addEventListener('click', () => {
+  if (currentStep > 0) {
+    currentStep--;
     updateTutorialStep();
   }
+});
 
-  function updateTutorialStep() {
-    const highlightBox = document.getElementById('highlight-box');
-    const tutorialText = document.getElementById('tutorial-text');
-    const tutorialContent = document.querySelector('.tutorial-content');
-    const prevBtn = document.getElementById('tutorial-prev');
-    const nextBtn = document.getElementById('tutorial-next');
+document.getElementById('tutorial-skip').addEventListener('click', () => {
+  document.getElementById('tutorial-overlay').style.display = 'none';
+});
 
-    if (isIntro) {
-      // Intro step: center the popup
-      tutorialContent.style.top = '50%';
-      tutorialContent.style.left = '50%';
-      tutorialContent.style.transform = 'translate(-50%, -50%)';
-      highlightBox.style.display = 'none';
-      document.getElementById('intro-title').style.display = 'block';
-      document.getElementById('intro-desc').style.display = 'block';
-      tutorialText.innerHTML = '';
-      prevBtn.style.display = 'none';
-      nextBtn.textContent = 'Lanjut';
-    } else {
-      // Normal steps
-      highlightBox.style.display = 'block';
-      tutorialContent.style.transform = 'none';
-      document.getElementById('intro-title').style.display = 'none';
-      document.getElementById('intro-desc').style.display = 'none';
-      const step = tutorialSteps[currentStep];
-      const element = document.querySelector(step.selector);
-
-      if (element) {
-        const rect = element.getBoundingClientRect();
-        highlightBox.style.top = rect.top - 10 + 'px';
-        highlightBox.style.left = rect.left - 10 + 'px';
-        highlightBox.style.width = rect.width + 20 + 'px';
-        highlightBox.style.height = rect.height + 20 + 'px';
-
-        let contentLeft, contentTop;
-
-        if (step.selector === '.avatar-section' && window.innerWidth <= 768) {
-          // Special positioning for avatar on mobile: always below
-          contentLeft = Math.max(10, rect.left - 50);
-          contentTop = rect.bottom + 20;
-        } else {
-          // Normal positioning logic
-          contentLeft = rect.right + 20;
-          contentTop = rect.top;
-          const contentWidth = 420;
-          const contentHeight = 300;
-
-          // If not enough space on the right, try left
-          if (contentLeft + contentWidth > window.innerWidth) {
-            contentLeft = rect.left - contentWidth - 20;
-          }
-
-          // If still not, or left is negative, position above or below
-          if (contentLeft < 0 || contentLeft + contentWidth > window.innerWidth) {
-            contentLeft = Math.max(10, rect.left - 50);
-            contentTop = rect.bottom + 20;
-            if (contentTop + contentHeight > window.innerHeight) {
-              contentTop = rect.top - contentHeight - 20;
-            }
-          }
-        }
-
-        tutorialContent.style.top = contentTop + 'px';
-        tutorialContent.style.left = contentLeft + 'px';
-
-        // Auto-scroll if popup is out of view on mobile
-        if (window.innerWidth <= 768) {
-          const container = document.querySelector('.container');
-          const popupBottom = contentTop + 300;
-          const popupTop = contentTop;
-          console.log('Step:', step.selector, 'contentTop:', contentTop, 'popupBottom:', popupBottom, 'window.innerHeight:', window.innerHeight, 'container.scrollTop:', container.scrollTop);
-          if (popupBottom > window.innerHeight) {
-            const delta = popupBottom - window.innerHeight + 50;
-            console.log('Scrolling down, delta:', delta);
-            container.scrollTo({ top: container.scrollTop + delta, behavior: 'smooth' });
-          }
-          if (popupTop < 0) {
-            const delta = popupTop - 50;
-            console.log('Scrolling up, delta:', delta);
-            container.scrollTo({ top: container.scrollTop + delta, behavior: 'smooth' });
-          }
-        }
-      }
-
-      tutorialText.innerHTML = step.text;
-
-      prevBtn.style.display = currentStep > 0 ? 'inline-block' : 'none';
-      nextBtn.textContent = currentStep < tutorialSteps.length - 1 ? 'Lanjut' : 'Selesai';
-    }
-  }
-
-  document.getElementById('tutorial-next').addEventListener('click', () => {
-    if (isIntro) {
-      isIntro = false;
-      currentStep = 0;
-      updateTutorialStep();
-    } else if (currentStep < tutorialSteps.length - 1) {
-      currentStep++;
-      updateTutorialStep();
-    } else {
-      document.getElementById('tutorial-overlay').style.display = 'none';
-    }
-  });
-
-  document.getElementById('tutorial-prev').addEventListener('click', () => {
-    if (currentStep > 0) {
-      currentStep--;
-      updateTutorialStep();
-    }
-  });
-
-  document.getElementById('tutorial-skip').addEventListener('click', () => {
-    document.getElementById('tutorial-overlay').style.display = 'none';
-  });
-
-  document.getElementById("masukDunia").addEventListener("click", enterMap);
-
-  function enterMap() {
-      window.location.href = 'map.html';
-    }
+/* =======================
+   ENTER MAP
+======================= */
+document.getElementById('masukDunia').addEventListener('click', () => {
+  window.location.href = 'map.html';
+});
 </script>
+
 </body>
 </html>
