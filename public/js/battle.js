@@ -8,14 +8,15 @@ class Character {
         this.mp = mp;
         this.baseAtk = atk;
         this.atk = atk;
+        this.baseDef = def;
         this.def = def;
-        this.multiplier = multiplier;
+        this.attackMultiplier = multiplier;
         this.skills = skills;
         this.buffs = [];
     }
 
     attack(target) {
-        let damage = Math.max(0, (this.atk * this.multiplier) - target.def);
+        let damage = Math.max(0, (this.atk * this.attackMultiplier) - target.def);
         target.hp = Math.max(0, target.hp - damage);
         return damage;
     }
@@ -25,7 +26,7 @@ class Character {
         if (this.mp >= skill.mpCost) {
             this.mp -= skill.mpCost;
             if (skill.effect === 'damage') {
-                let damage = Math.max(0, skill.damage - target.def);
+                let damage = Math.max(0, (skill.damage * (skill.multiplier || 1)) - target.def);
                 target.hp = Math.max(0, target.hp - damage);
                 return damage;
             } else if (skill.effect === 'heal') {
@@ -42,9 +43,12 @@ class Character {
 
     updateStats() {
         this.atk = this.baseAtk;
+        this.def = this.baseDef;
         this.buffs.forEach(buff => {
             if (buff.type === 'atk_percent') {
                 this.atk = Math.floor(this.baseAtk * (1 + buff.value / 100));
+            } else if (buff.type === 'def_percent') {
+                this.def = Math.floor(this.baseDef * (1 + buff.value / 100));
             }
         });
     }
@@ -99,7 +103,7 @@ class Battle {
                             } else if (skill.effect === 'heal') {
                                 message += `uses ${skill.name} and heals for ${result} HP!`;
                             } else if (skill.effect === 'buff') {
-                                message += `uses ${skill.name} and boosts ATK by ${result}%!`;
+                                message += `uses ${skill.name} and boosts ${skill.buffType === 'atk_percent' ? 'ATK' : 'DEF'} by ${result}%!`;
                             }
                         } else {
                             message += 'doesn\'t have enough MP!';
@@ -243,9 +247,9 @@ class Battle {
 
 // Initialize battle
 const player = new Character('Hero A', 150, 50, 25, 15, 0.8, [
-    { name: 'Fireball', effect: 'damage', damage: 40, mpCost: 10 },
+    { name: 'Fireball', effect: 'damage', damage: 40, multiplier: 1.2, mpCost: 10 },
     { name: 'Shadow Strike', effect: 'heal', heal: 30, mpCost: 12 },
-    { name: 'Flame Burst', effect: 'buff', buffType: 'atk_percent', buffValue: 10, buffTurns: 2, mpCost: 10 }
+    { name: 'Flame Burst', effect: 'buff', buffType: 'def_percent', buffValue: 10, buffTurns: 2, mpCost: 10 }
 ]);
 const enemies = [
     new Character('Goblin', 100, 0, 20, 5, 1.0),
