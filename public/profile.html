@@ -651,23 +651,31 @@ width: 100%;
         highlightBox.style.width = rect.width + 20 + 'px';
         highlightBox.style.height = rect.height + 20 + 'px';
 
-        // Position tutorial content to the right of the highlight
-        let contentLeft = rect.right + 20;
-        let contentTop = rect.top;
-        const contentWidth = 420;
-        const contentHeight = 300;
+        let contentLeft, contentTop;
 
-        // If not enough space on the right, try left
-        if (contentLeft + contentWidth > window.innerWidth) {
-          contentLeft = rect.left - contentWidth - 20;
-        }
-
-        // If still not, or left is negative, position above or below
-        if (contentLeft < 0 || contentLeft + contentWidth > window.innerWidth) {
+        if (step.selector === '.avatar-section' && window.innerWidth <= 768) {
+          // Special positioning for avatar on mobile: always below
           contentLeft = Math.max(10, rect.left - 50);
           contentTop = rect.bottom + 20;
-          if (contentTop + contentHeight > window.innerHeight) {
-            contentTop = rect.top - contentHeight - 20;
+        } else {
+          // Normal positioning logic
+          contentLeft = rect.right + 20;
+          contentTop = rect.top;
+          const contentWidth = 420;
+          const contentHeight = 300;
+
+          // If not enough space on the right, try left
+          if (contentLeft + contentWidth > window.innerWidth) {
+            contentLeft = rect.left - contentWidth - 20;
+          }
+
+          // If still not, or left is negative, position above or below
+          if (contentLeft < 0 || contentLeft + contentWidth > window.innerWidth) {
+            contentLeft = Math.max(10, rect.left - 50);
+            contentTop = rect.bottom + 20;
+            if (contentTop + contentHeight > window.innerHeight) {
+              contentTop = rect.top - contentHeight - 20;
+            }
           }
         }
 
