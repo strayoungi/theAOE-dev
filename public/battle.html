@@ -1,168 +1,119 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>Pixel Battle UI</title>
-  <style>
-    * {
-        box-sizing: border-box;
-        font-family: 'Press Start 2P', monospace;
-    }
-
-    body {
-        margin: 0;
-        background: #2b0f1c;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        height: 100vh;
-    }
-
-    .battle-screen {
-        width: 900px;
-        height: 500px;
-        background: linear-gradient(#2a1738, #6a1b1b);
-        display: grid;
-        grid-template-columns: 1fr 2fr 2fr 1fr;
-        grid-template-rows: auto 1fr;
-        gap: 20px;
-        padding: 20px;
-        border-radius: 16px;
-    }
-
-    /* Characters */
-    .character {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
-
-    .character img {
-        width: 120px;
-        image-rendering: pixelated;
-    }
-
-    /* Status Card */
-    .status-card {
-        background: #d8b75a;
-        border-radius: 16px;
-        padding: 12px;
-        color: #3b2a00;
-    }
-
-    .name {
-        background: #333;
-        color: white;
-        padding: 6px 10px;
-        border-radius: 12px;
-        font-size: 10px;
-        margin-bottom: 10px;
-        text-align: center;
-    }
-
-    .stat {
-        display: flex;
-        justify-content: space-between;
-        font-size: 10px;
-        margin: 6px 0;
-    }
-
-    /* Action Panel */
-    .action-panel {
-        grid-column: 1 / -1;
-        display: grid;
-        grid-template-columns: 1fr 1fr 1.5fr 1.5fr;
-        gap: 16px;
-        align-items: center;
-    }
-
-    .btn {
-        background: #2f2a26;
-        color: white;
-        border: none;
-        padding: 14px;
-        border-radius: 24px;
-        cursor: pointer;
-    }
-
-    .btn:hover {
-        background: #444;
-    }
-
-    /* Skill Cards */
-    .skill-card {
-        background: #2f2a26;
-        border: 3px solid #d8b75a;
-        border-radius: 16px;
-        color: white;
-        padding: 14px;
-        text-align: center;
-    }
-
-    .skill-card h3 {
-        color: #d8b75a;
-        font-size: 10px;
-        margin-bottom: 10px;
-    }
-
-    .skill-card p {
-        font-size: 10px;
-        line-height: 1.4;
-    }
-
-  </style>
+    <meta charset="UTF-8" />
+    <title>Pixel Battle UI</title>
+    <link rel="stylesheet" href="css/battle.css">
 </head>
 <body>
-  <div class="battle-screen">
+    <div class="battle-screen">
+        <!-- Player Section -->
+        <div class="player-section">
+            <!-- Character 1 -->
+            <div class="character">
+                <img src="img/char1.png" alt="Character 1" />
+            </div>
 
-    <!-- Player -->
-    <div class="character left">
-      <img src="player.png" alt="Player">
+            <!-- Status Card 1 -->
+            <div class="status-card">
+                <div class="name">Hero A</div>
+                <div class="companion-name">Companions: Shadow Wolf, Fire Spirit</div>
+                <div class="stat">HP: 120 / 150</div>
+                <div class="stat">MP: 30 / 50</div>
+                <div class="stat">ATK: 25</div>
+                <div class="stat">DEF: 15</div>
+                <div class="health-bar">
+                    <div class="health-bar-fill"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Enemy Section -->
+        <div class="enemy-section">
+            <!-- Enemy 1 -->
+            <div class="character">
+                <img src="img/char2.png" alt="Enemy 1" />
+            </div>
+
+            <!-- Status Card Enemy 1 -->
+            <div class="status-card">
+                <div class="name">Goblin</div>
+                <div class="stat">HP: 100 / 100</div>
+                <div class="stat">ATK: 20</div>
+                <div class="stat">DEF: 5</div>
+                <div class="health-bar">
+                    <div class="health-bar-fill"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Enemy Section 2 -->
+        <div class="enemy-section">
+            <!-- Enemy 2 -->
+            <div class="character">
+                <img src="img/char2.png" alt="Enemy 2" />
+            </div>
+
+            <!-- Status Card Enemy 2 -->
+            <div class="status-card">
+                <div class="name">Orc</div>
+                <div class="stat">HP: 120 / 120</div>
+                <div class="stat">ATK: 25</div>
+                <div class="stat">DEF: 8</div>
+                <div class="health-bar">
+                    <div class="health-bar-fill"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Action Panel -->
+        <div class="action-panel">
+            <div class="turn-indicator">Player's Turn</div>
+            <button class="btn">Attack</button>
+            <div class="skill-card">
+                <h3>Fireball</h3>
+                <p>Deals 40 fire damage. Cost: 10 MP</p>
+            </div>
+            <div class="skill-card">
+                <h3>Shadow Strike</h3>
+                <p>Restores 30 HP (Shadow Wolf). Cost: 12 MP</p>
+            </div>
+            <div class="skill-card">
+                <h3>Flame Burst</h3>
+                <p>Boosts ATK by 10% for next turn (Fire Spirit). Cost: 10 MP</p>
+            </div>
+        </div>
+
+        <!-- Battle Log -->
+        <div class="battle-log">
+        </div>
     </div>
 
-    <!-- Player Stats -->
-    <div class="status-card">
-      <div class="name">ARJUNA_99</div>
-      <div class="stat">
-        ❤️ <span>100/100</span>
-      </div>
-      <div class="stat">
-        🧪 <span>100/100</span>
-      </div>
+    <!-- Victory Popup -->
+    <div id="victory-popup" class="popup-overlay" style="display: none;">
+        <div class="popup-content">
+            <h2>You Win!</h2>
+            <div class="rewards">
+                <p>EXP Gained: <span id="exp-gained">0</span></p>
+                <p>Coins Gained: <span id="coins-gained">0</span></p>
+            </div>
+            <div class="popup-buttons">
+                <button id="back-to-zone">Back to Previous Zone</button>
+                <button id="continue-battle">Continue</button>
+                <button id="view-log">View Battle Log</button>
+            </div>
+        </div>
     </div>
 
-    <!-- Enemy Stats -->
-    <div class="status-card">
-      <div class="name">GLITCH SLIME</div>
-      <div class="stat">
-        ❤️ <span>100/100</span>
-      </div>
-      <div class="stat">
-        ⚔️ <span>100/100</span>
-      </div>
+    <!-- Battle Log Modal -->
+    <div id="log-modal" class="popup-overlay" style="display: none;">
+        <div class="popup-content">
+            <h2>Battle Log</h2>
+            <div id="log-content"></div>
+            <button id="close-log">Close</button>
+        </div>
     </div>
 
-    <!-- Enemy -->
-    <div class="character right">
-      <img src="enemy.png" alt="Enemy">
-    </div>
-
-    <!-- Action Panel -->
-    <div class="action-panel">
-      <button class="btn">ATTACK</button>
-      <button class="btn">SKILL PLAYER</button>
-
-      <div class="skill-card">
-        <h3>SKILL 1</h3>
-        <p>Heal 15%<br>Max HP</p>
-      </div>
-
-      <div class="skill-card">
-        <h3>SKILL 2</h3>
-        <p>+25% ATK<br>next turn</p>
-      </div>
-    </div>
-
-  </div>
+    <script src="js/battle.js"></script>
 </body>
 </html>

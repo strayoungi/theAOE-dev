@@ -145,7 +145,7 @@ class Battle {
             this.endBattle();
         } else if (!enemiesAlive) {
             this.logMessage("You win!");
-            this.endBattle();
+            this.showVictoryPopup();
         }
     }
 
@@ -157,6 +157,40 @@ class Battle {
         // Disable buttons or show end screen
         document.querySelectorAll('.btn').forEach(btn => btn.disabled = true);
         document.querySelectorAll('.skill-card').forEach(skill => skill.style.pointerEvents = 'none');
+    }
+
+    showVictoryPopup() {
+        const expGained = this.enemies.length * 10;
+        const coinsGained = this.enemies.length * 5;
+
+        document.getElementById('exp-gained').textContent = expGained;
+        document.getElementById('coins-gained').textContent = coinsGained;
+
+        document.getElementById('victory-popup').style.display = 'flex';
+
+        // Event listeners for buttons
+        document.getElementById('back-to-zone').addEventListener('click', () => {
+            window.location.href = 'map.html'; // Assuming map.html is the zone selection
+        });
+
+        document.getElementById('continue-battle').addEventListener('click', () => {
+            // For now, reload the page or go to next zone
+            window.location.href = 'zona1.html'; // Assuming zona1.html is the next zone
+        });
+
+        document.getElementById('view-log').addEventListener('click', () => {
+            this.showBattleLog();
+        });
+    }
+
+    showBattleLog() {
+        const logContent = document.getElementById('log-content');
+        logContent.innerHTML = this.battleLog.map(entry => `<div class="log-entry">${entry}</div>`).join('');
+        document.getElementById('log-modal').style.display = 'flex';
+
+        document.getElementById('close-log').addEventListener('click', () => {
+            document.getElementById('log-modal').style.display = 'none';
+        });
     }
 
     logMessage(message) {
