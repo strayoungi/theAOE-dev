@@ -19,6 +19,40 @@
       overflow: hidden;
     }
 
+    /* === LOADING OVERLAY === */
+    .loading-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.8);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+      color: white;
+      font-size: 20px;
+    }
+
+    .loading-bar-container {
+      width: 300px;
+      height: 30px;
+      background-color: #444;
+      border: 2px solid #d4af4d;
+      border-radius: 15px;
+      margin-top: 20px;
+    }
+
+    .loading-bar {
+      height: 100%;
+      background-color: #d4af4d;
+      border-radius: 13px;
+      width: 0%;
+      transition: width 0.3s ease;
+    }
+
     #playBtn {
       padding: 10px 30px;
       font-family: inherit;
@@ -50,10 +84,61 @@
   </style>
 </head>
 <body>
+  <div class="loading-overlay" id="loading-overlay">
+    <div>Loading World...</div>
+    <div class="loading-bar-container">
+      <div class="loading-bar" id="loading-bar"></div>
+    </div>
+  </div>
   <h1 class="title">Welcome to Ashes of Elysia</h1>
   <button id="playBtn">Start Game</button>
 
   <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      const overlay = document.getElementById('loading-overlay');
+      const loadingBar = document.getElementById('loading-bar');
+
+      // === DAFTAR SEMUA ASSET GAMBAR ===
+      const imageSources = [
+        '/img/bg-eidolon.png', // background
+        // tambahin asset lain di sini nanti
+        // '/img/hero.png',
+        // '/img/ui.png'
+      ];
+
+      const domImages = document.querySelectorAll('img');
+      domImages.forEach(img => imageSources.push(img.src));
+
+      let loadedCount = 0;
+      const totalImages = imageSources.length;
+
+      if (totalImages === 0) {
+        overlay.style.display = 'none';
+        return;
+      }
+
+      imageSources.forEach(src => {
+        const img = new Image();
+        img.src = src;
+
+        img.onload = img.onerror = () => {
+          loadedCount++;
+          updateProgress();
+        };
+      });
+
+      function updateProgress() {
+        const progress = (loadedCount / totalImages) * 100;
+        loadingBar.style.width = progress + '%';
+
+        if (loadedCount === totalImages) {
+          setTimeout(() => {
+            overlay.style.display = 'none';
+          }, 500);
+        }
+      }
+    });
+
     document.getElementById('playBtn').addEventListener('click', function() {
       // arahkan ke halaman lain
       window.location.href = 'login.html';

@@ -322,7 +322,7 @@ class Battle {
 }
 
 // Initialize battle
-const player = new Character('Hero A', 150, 50, 25, 15, 0.8, 0.2, 1.5, [
+const player = new Character('Hero A', 200, 50, 25, 15, 0.8, 0.2, 1.5, [
     { name: 'Fireball', effect: 'damage', damage: 40, multiplier: 1.2, mpCost: 10 },
     { name: 'Shadow Strike', effect: 'heal', heal: 30, mpCost: 12 },
     { name: 'Flame Burst', effect: 'buff', buffType: 'def_percent', buffValue: 10, buffTurns: 2, mpCost: 10 },
@@ -330,8 +330,8 @@ const player = new Character('Hero A', 150, 50, 25, 15, 0.8, 0.2, 1.5, [
     { name: 'Protective Barrier', effect: 'buff', buffType: 'shield', buffValue: 30, buffTurns: 2, mpCost: 12 }
 ]);
 const enemies = [
-    new Character('Goblin', 100, 0, 70, 20, 1.0),
-    new Character('Orc', 120, 0, 60, 20, 1.0)
+    new Character('Goblin', 100, 0, 10, 20, 1.0),
+    new Character('Orc', 120, 0, 15, 20, 1.0)
 ];
 
 const battle = new Battle(player, enemies);
