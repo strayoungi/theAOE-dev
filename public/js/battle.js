@@ -198,8 +198,10 @@ class Battle {
         if (this.player.hp <= 0) {
             this.logMessage("You lose!");
             this.endBattle();
+            this.showLosePopup();
         } else if (!enemiesAlive) {
             this.logMessage("You win!");
+            this.endBattle();
             this.showVictoryPopup();
         }
     }
@@ -225,7 +227,7 @@ class Battle {
 
         // Event listeners for buttons
         document.getElementById('back-to-zone').addEventListener('click', () => {
-            window.location.href = 'map.html'; // Assuming map.html is the zone selection
+            window.location.href = 'zona1.html'; // Assuming map.html is the zone selection
         });
 
         document.getElementById('continue-battle').addEventListener('click', () => {
@@ -234,6 +236,24 @@ class Battle {
         });
 
         document.getElementById('view-log').addEventListener('click', () => {
+            this.showBattleLog();
+        });
+    }
+
+    showLosePopup() {
+        document.getElementById('lose-popup').style.display = 'flex';
+
+        // Event listeners for buttons
+        document.getElementById('back-to-zone-lose').addEventListener('click', () => {
+            window.location.href = 'zona1.html'; // Assuming map.html is the zone selection
+        });
+
+        document.getElementById('try-again-battle').addEventListener('click', () => {
+            // For now, reload the page or go to next zone
+            window.location.href = 'battle.html'; // Assuming zona1.html is the next zone
+        });
+
+        document.getElementById('view-battle-log').addEventListener('click', () => {
             this.showBattleLog();
         });
     }
@@ -310,8 +330,8 @@ const player = new Character('Hero A', 150, 50, 25, 15, 0.8, 0.2, 1.5, [
     { name: 'Protective Barrier', effect: 'buff', buffType: 'shield', buffValue: 30, buffTurns: 2, mpCost: 12 }
 ]);
 const enemies = [
-    new Character('Goblin', 100, 0, 20, 5, 1.0),
-    new Character('Orc', 120, 0, 25, 8, 1.0)
+    new Character('Goblin', 100, 0, 70, 20, 1.0),
+    new Character('Orc', 120, 0, 60, 20, 1.0)
 ];
 
 const battle = new Battle(player, enemies);

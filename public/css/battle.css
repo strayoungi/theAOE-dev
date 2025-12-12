@@ -20,6 +20,13 @@ body {
     height: auto;
     min-height: 90vh;
 }
+.enemy-container{
+    display: flex;
+    flex-direction: row;
+    gap: 20px;
+    justify-content: center;
+    align-items: center;
+}
 
 .player-section, .enemy-section {
     display: flex;
