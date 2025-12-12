@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Pixel Battle UI</title>
+  <style>
+    * {
+        box-sizing: border-box;
+        font-family: 'Press Start 2P', monospace;
+    }
+
+    body {
+        margin: 0;
+        background: #2b0f1c;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+    }
+
+    .battle-screen {
+        width: 900px;
+        height: 500px;
+        background: linear-gradient(#2a1738, #6a1b1b);
+        display: grid;
+        grid-template-columns: 1fr 2fr 2fr 1fr;
+        grid-template-rows: auto 1fr;
+        gap: 20px;
+        padding: 20px;
+        border-radius: 16px;
+    }
+
+    /* Characters */
+    .character {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .character img {
+        width: 120px;
+        image-rendering: pixelated;
+    }
+
+    /* Status Card */
+    .status-card {
+        background: #d8b75a;
+        border-radius: 16px;
+        padding: 12px;
+        color: #3b2a00;
+    }
+
+    .name {
+        background: #333;
+        color: white;
+        padding: 6px 10px;
+        border-radius: 12px;
+        font-size: 10px;
+        margin-bottom: 10px;
+        text-align: center;
+    }
+
+    .stat {
+        display: flex;
+        justify-content: space-between;
+        font-size: 10px;
+        margin: 6px 0;
+    }
+
+    /* Action Panel */
+    .action-panel {
+        grid-column: 1 / -1;
+        display: grid;
+        grid-template-columns: 1fr 1fr 1.5fr 1.5fr;
+        gap: 16px;
+        align-items: center;
+    }
+
+    .btn {
+        background: #2f2a26;
+        color: white;
+        border: none;
+        padding: 14px;
+        border-radius: 24px;
+        cursor: pointer;
+    }
+
+    .btn:hover {
+        background: #444;
+    }
+
+    /* Skill Cards */
+    .skill-card {
+        background: #2f2a26;
+        border: 3px solid #d8b75a;
+        border-radius: 16px;
+        color: white;
+        padding: 14px;
+        text-align: center;
+    }
+
+    .skill-card h3 {
+        color: #d8b75a;
+        font-size: 10px;
+        margin-bottom: 10px;
+    }
+
+    .skill-card p {
+        font-size: 10px;
+        line-height: 1.4;
+    }
+
+  </style>
+</head>
+<body>
+  <div class="battle-screen">
+
+    <!-- Player -->
+    <div class="character left">
+      <img src="player.png" alt="Player">
+    </div>
+
+    <!-- Player Stats -->
+    <div class="status-card">
+      <div class="name">ARJUNA_99</div>
+      <div class="stat">
+        ❤️ <span>100/100</span>
+      </div>
+      <div class="stat">
+        🧪 <span>100/100</span>
+      </div>
+    </div>
+
+    <!-- Enemy Stats -->
+    <div class="status-card">
+      <div class="name">GLITCH SLIME</div>
+      <div class="stat">
+        ❤️ <span>100/100</span>
+      </div>
+      <div class="stat">
+        ⚔️ <span>100/100</span>
+      </div>
+    </div>
+
+    <!-- Enemy -->
+    <div class="character right">
+      <img src="enemy.png" alt="Enemy">
+    </div>
+
+    <!-- Action Panel -->
+    <div class="action-panel">
+      <button class="btn">ATTACK</button>
+      <button class="btn">SKILL PLAYER</button>
+
+      <div class="skill-card">
+        <h3>SKILL 1</h3>
+        <p>Heal 15%<br>Max HP</p>
+      </div>
+
+      <div class="skill-card">
+        <h3>SKILL 2</h3>
+        <p>+25% ATK<br>next turn</p>
+      </div>
+    </div>
+
+  </div>
+</body>
+</html>

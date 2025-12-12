@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>Pixel Battle UI</title>
+    <link rel="stylesheet" href="css/battle1.css">
+</head>
+<body>
+    <div class="battle-screen">
+        <!-- Player Section -->
+        <div class="player-section">
+            <!-- Character 1 -->
+            <div class="character">
+                <img src="img/char1.png" alt="Character 1" />
+            </div>
+
+            <!-- Status Card 1 -->
+            <div class="status-card">
+                <div class="name">Hero A</div>
+                <div class="stat">HP: 120 / 150</div>
+                <div class="stat">MP: 30 / 50</div>
+                <div class="stat">ATK: 25</div>
+                <div class="stat">DEF: 15</div>
+                <div class="health-bar">
+                    <div class="health-bar-fill"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Enemy Section -->
+        <div class="enemy-section">
+            <!-- Character 2 -->
+            <div class="character">
+                <img src="img/char2.png" alt="Character 2" />
+            </div>
+
+            <!-- Status Card 2 -->
+            <div class="status-card">
+                <div class="name">Goblin</div>
+                <div class="stat">HP: 100 / 100</div>
+                <div class="stat">ATK: 20</div>
+                <div class="stat">DEF: 5</div>
+                <div class="health-bar">
+                    <div class="health-bar-fill"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Action Panel -->
+        <div class="action-panel">
+            <div class="turn-indicator">Player's Turn</div>
+            <button class="btn">Attack</button>
+            <button class="btn">Defend</button>
+            <div class="skill-card">
+                <h3>Fireball</h3>
+                <p>Deals 40 fire damage. Cost: 10 MP</p>
+            </div>
+            <div class="skill-card">
+                <h3>Heal</h3>
+                <p>Restores 30 HP to self. Cost: 15 MP</p>
+            </div>
+        </div>
+
+        <!-- Battle Log -->
+        <div class="battle-log">
+        </div>
+    </div>
+
+    <script src="js/battle1.js"></script>
+</body>
+</html>

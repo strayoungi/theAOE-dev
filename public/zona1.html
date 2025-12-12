@@ -138,7 +138,7 @@
         <div id="closeModal">✕</div>
         <h2 id="modalTitle">Node Title</h2>
         <p id="modalDesc">Deskripsi node akan muncul di sini.</p>
-        <button>Enter</button>
+        <button onclick="enterBattle()">Enter</button>
         <button>Cancel</button>
     </div>
 </div>
@@ -206,6 +206,10 @@
             modalOverlay.style.display = "none";
         }
     });
+
+    function enterBattle() {
+        window.location.href = "battle1.html";
+    }
 </script>
 
 </body>
