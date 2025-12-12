@@ -60,6 +60,13 @@ body {
     margin-bottom: 10px;
 }
 
+.companion-name {
+    font-size: 14px;
+    color: #f39c12;
+    margin-bottom: 10px;
+    font-style: italic;
+}
+
 .status-card .stat {
     margin-bottom: 5px;
 }
@@ -231,7 +238,7 @@ body {
         padding: 8px;
     }
 
-    .turn-indicator {
-        font-size: 18px;
+    .companion-name {
+        font-size: 12px;
     }
 }

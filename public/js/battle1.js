@@ -9,40 +9,21 @@ class Character {
         this.atk = atk;
         this.def = def;
         this.skills = skills;
-        this.isDefending = false;
     }
 
     attack(target) {
-        let damage = this.atk;
-        if (target.isDefending) {
-            damage = Math.floor(damage / 2);
-            target.isDefending = false;
-        }
+        let damage = Math.max(0, this.atk - target.def);
         target.hp = Math.max(0, target.hp - damage);
         return damage;
-    }
-
-    defend() {
-        this.isDefending = true;
     }
 
     useSkill(skillIndex, target) {
         const skill = this.skills[skillIndex];
         if (this.mp >= skill.mpCost) {
             this.mp -= skill.mpCost;
-            if (skill.damage > 0) {
-                let damage = skill.damage;
-                if (target.isDefending) {
-                    damage = Math.floor(damage / 2);
-                    target.isDefending = false;
-                }
-                target.hp = Math.max(0, target.hp - damage);
-                return damage;
-            } else {
-                // Heal
-                target.hp = Math.min(target.maxHp, target.hp - skill.damage);
-                return -skill.damage;
-            }
+            let damage = Math.max(0, skill.damage - target.def);
+            target.hp = Math.max(0, target.hp - damage);
+            return damage;
         }
         return 0;
     }
@@ -71,17 +52,11 @@ class Battle {
                 const damage = player.attack(this.enemy);
                 message += `attacks ${this.enemy.name} for ${damage} damage!`;
                 break;
-            case 'defend':
-                player.defend();
-                message += 'defends!';
-                break;
             case 'skill':
                 if (this.selectedSkill !== null) {
-                    const result = player.useSkill(this.selectedSkill, this.selectedSkill === 1 ? this.player : this.enemy);
+                    const result = player.useSkill(this.selectedSkill, this.enemy);
                     if (result > 0) {
                         message += `uses ${player.skills[this.selectedSkill].name} on ${this.enemy.name} for ${result} damage!`;
-                    } else if (result < 0) {
-                        message += `uses ${player.skills[this.selectedSkill].name} and heals for ${-result} HP!`;
                     } else {
                         message += 'doesn\'t have enough MP!';
                         return;
@@ -138,8 +113,10 @@ class Battle {
         // Update player stats
         const playerCard = document.querySelector('.player-section .status-card');
         playerCard.querySelector('.name').textContent = this.player.name;
-        playerCard.querySelector('.stat:nth-child(2)').textContent = `HP: ${this.player.hp} / ${this.player.maxHp}`;
-        playerCard.querySelector('.stat:nth-child(3)').textContent = `MP: ${this.player.mp} / ${this.player.maxMp}`;
+        playerCard.querySelector('.stat:nth-child(3)').textContent = `HP: ${this.player.hp} / ${this.player.maxHp}`;
+        playerCard.querySelector('.stat:nth-child(4)').textContent = `MP: ${this.player.mp} / ${this.player.maxMp}`;
+        playerCard.querySelector('.stat:nth-child(5)').textContent = `ATK: ${this.player.atk}`;
+        playerCard.querySelector('.stat:nth-child(6)').textContent = `DEF: ${this.player.def}`;
         const playerHealthBar = playerCard.querySelector('.health-bar-fill');
         playerHealthBar.style.width = `${(this.player.hp / this.player.maxHp) * 100}%`;
 
@@ -175,7 +152,8 @@ class Battle {
 // Initialize battle
 const player = new Character('Hero A', 150, 50, 25, 15, [
     { name: 'Fireball', damage: 40, mpCost: 10 },
-    { name: 'Heal', damage: -30, mpCost: 15 }
+    { name: 'Shadow Strike', damage: 50, mpCost: 12 },
+    { name: 'Flame Burst', damage: 45, mpCost: 10 }
 ]);
 const enemy = new Character('Goblin', 100, 0, 20, 5);
 
@@ -189,8 +167,6 @@ document.addEventListener('DOMContentLoaded', () => {
         btn.addEventListener('click', () => {
             if (btn.textContent === 'Attack') {
                 battle.playerAction('attack');
-            } else if (btn.textContent === 'Defend') {
-                battle.playerAction('defend');
             }
         });
     });
