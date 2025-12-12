@@ -59,12 +59,13 @@ class Character {
 }
 
 class Battle {
-    constructor(player, enemy) {
+    constructor(player, enemies) {
         this.player = player;
-        this.enemy = enemy;
+        this.enemies = enemies;
         this.isPlayerTurn = true;
         this.battleLog = [];
         this.selectedSkill = null;
+        this.selectedTarget = 0; // Default target enemy 0
     }
 
     startBattle() {
@@ -78,24 +79,34 @@ class Battle {
 
         switch (action) {
             case 'attack':
-                const damage = player.attack(this.enemy);
-                message += `attacks ${this.enemy.name} for ${damage} damage!`;
+                const targetEnemy = this.enemies[this.selectedTarget];
+                if (targetEnemy && targetEnemy.hp > 0) {
+                    const damage = player.attack(targetEnemy);
+                    message += `attacks ${targetEnemy.name} for ${damage} damage!`;
+                } else {
+                    message += 'tries to attack but target is defeated!';
+                }
                 break;
             case 'skill':
                 if (this.selectedSkill !== null) {
                     const skill = player.skills[this.selectedSkill];
-                    const target = (skill.effect === 'heal' || skill.effect === 'buff') ? player : this.enemy;
-                    const result = player.useSkill(this.selectedSkill, target);
-                    if (result > 0) {
-                        if (skill.effect === 'damage') {
-                            message += `uses ${skill.name} on ${this.enemy.name} for ${result} damage!`;
-                        } else if (skill.effect === 'heal') {
-                            message += `uses ${skill.name} and heals for ${result} HP!`;
-                        } else if (skill.effect === 'buff') {
-                            message += `uses ${skill.name} and boosts ATK by ${result}%!`;
+                    const target = (skill.effect === 'heal' || skill.effect === 'buff') ? player : this.enemies[this.selectedTarget];
+                    if (target && (target.hp > 0 || skill.effect === 'heal' || skill.effect === 'buff')) {
+                        const result = player.useSkill(this.selectedSkill, target);
+                        if (result > 0) {
+                            if (skill.effect === 'damage') {
+                                message += `uses ${skill.name} on ${target.name} for ${result} damage!`;
+                            } else if (skill.effect === 'heal') {
+                                message += `uses ${skill.name} and heals for ${result} HP!`;
+                            } else if (skill.effect === 'buff') {
+                                message += `uses ${skill.name} and boosts ATK by ${result}%!`;
+                            }
+                        } else {
+                            message += 'doesn\'t have enough MP!';
+                            return;
                         }
                     } else {
-                        message += 'doesn\'t have enough MP!';
+                        message += 'invalid target!';
                         return;
                     }
                 }
@@ -112,10 +123,14 @@ class Battle {
     }
 
     enemyTurn() {
-        const damage = this.enemy.attack(this.player);
-        this.logMessage(`${this.enemy.name} attacks ${this.player.name} for ${damage} damage!`);
+        this.enemies.forEach((enemy, index) => {
+            if (enemy.hp > 0) {
+                const damage = enemy.attack(this.player);
+                this.logMessage(`${enemy.name} attacks ${this.player.name} for ${damage} damage!`);
+            }
+        });
         this.player.endTurn();
-        this.enemy.endTurn();
+        this.enemies.forEach(enemy => enemy.endTurn());
         this.checkBattleEnd();
         if (!this.isBattleOver()) {
             this.isPlayerTurn = true;
@@ -124,17 +139,18 @@ class Battle {
     }
 
     checkBattleEnd() {
+        const enemiesAlive = this.enemies.some(e => e.hp > 0);
         if (this.player.hp <= 0) {
             this.logMessage("You lose!");
             this.endBattle();
-        } else if (this.enemy.hp <= 0) {
+        } else if (!enemiesAlive) {
             this.logMessage("You win!");
             this.endBattle();
         }
     }
 
     isBattleOver() {
-        return this.player.hp <= 0 || this.enemy.hp <= 0;
+        return this.player.hp <= 0 || this.enemies.every(e => e.hp <= 0);
     }
 
     endBattle() {
@@ -160,24 +176,27 @@ class Battle {
         playerHealthBar.style.width = `${(this.player.hp / this.player.maxHp) * 100}%`;
 
         // Update enemy stats
-        const enemyCard = document.querySelector('.enemy-section .status-card');
-        enemyCard.querySelector('.name').textContent = this.enemy.name;
-        enemyCard.querySelector('.stat:nth-child(2)').textContent = `HP: ${this.enemy.hp} / ${this.enemy.maxHp}`;
-        const enemyHealthBar = enemyCard.querySelector('.health-bar-fill');
-        enemyHealthBar.style.width = `${(this.enemy.hp / this.enemy.maxHp) * 100}%`;
+        const enemyCards = document.querySelectorAll('.enemy-section .status-card');
+        this.enemies.forEach((enemy, index) => {
+            if (enemyCards[index]) {
+                enemyCards[index].querySelector('.name').textContent = enemy.name;
+                enemyCards[index].querySelector('.stat:nth-child(2)').textContent = `HP: ${enemy.hp} / ${enemy.maxHp}`;
+                enemyCards[index].querySelector('.stat:nth-child(3)').textContent = `ATK: ${enemy.atk}`;
+                enemyCards[index].querySelector('.stat:nth-child(4)').textContent = `DEF: ${enemy.def}`;
+                const enemyHealthBar = enemyCards[index].querySelector('.health-bar-fill');
+                enemyHealthBar.style.width = `${(enemy.hp / enemy.maxHp) * 100}%`;
+            }
+        });
 
         // Update turn indicator
         const turnIndicator = document.querySelector('.turn-indicator');
-        turnIndicator.textContent = this.isPlayerTurn ? `${this.player.name}'s turn` : `${this.enemy.name}'s turn`;
+        turnIndicator.textContent = this.isPlayerTurn ? `${this.player.name}'s turn` : `Enemies' turn`;
 
-        // Disable/enable controls based on turn
-        document.querySelectorAll('.btn').forEach(btn => {
-            btn.disabled = !this.isPlayerTurn;
-            btn.style.opacity = this.isPlayerTurn ? '1' : '0.5';
-        });
-        document.querySelectorAll('.skill-card').forEach(skill => {
-            skill.style.pointerEvents = this.isPlayerTurn ? 'auto' : 'none';
-            skill.style.opacity = this.isPlayerTurn ? '1' : '0.5';
+        // Update selected target visual
+        document.querySelectorAll('.enemy-section').forEach((section, index) => {
+            section.classList.toggle('selected', index === this.selectedTarget);
+            section.style.pointerEvents = this.isPlayerTurn ? 'auto' : 'none';
+            section.style.opacity = this.isPlayerTurn ? '1' : '0.5';
         });
     }
 
@@ -194,9 +213,12 @@ const player = new Character('Hero A', 150, 50, 25, 15, 0.8, [
     { name: 'Shadow Strike', effect: 'heal', heal: 30, mpCost: 12 },
     { name: 'Flame Burst', effect: 'buff', buffType: 'atk_percent', buffValue: 10, buffTurns: 2, mpCost: 10 }
 ]);
-const enemy = new Character('Goblin', 100, 0, 20, 5, 1.0);
+const enemies = [
+    new Character('Goblin', 100, 0, 20, 5, 1.0),
+    new Character('Orc', 120, 0, 25, 8, 1.0)
+];
 
-const battle = new Battle(player, enemy);
+const battle = new Battle(player, enemies);
 
 // Event listeners
 document.addEventListener('DOMContentLoaded', () => {
@@ -217,6 +239,16 @@ document.addEventListener('DOMContentLoaded', () => {
             battle.selectedSkill = index;
             // Auto use skill after selection
             setTimeout(() => battle.playerAction('skill'), 500);
+        });
+    });
+
+    document.querySelectorAll('.enemy-section').forEach((section, index) => {
+        section.addEventListener('click', () => {
+            if (battle.isPlayerTurn) {
+                document.querySelectorAll('.enemy-section').forEach(s => s.classList.remove('selected'));
+                section.classList.add('selected');
+                battle.selectedTarget = index;
+            }
         });
     });
 });
