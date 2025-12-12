@@ -687,12 +687,15 @@ width: 100%;
           const container = document.querySelector('.container');
           const popupBottom = contentTop + 300;
           const popupTop = contentTop;
+          console.log('Step:', step.selector, 'contentTop:', contentTop, 'popupBottom:', popupBottom, 'window.innerHeight:', window.innerHeight, 'container.scrollTop:', container.scrollTop);
           if (popupBottom > window.innerHeight) {
             const delta = popupBottom - window.innerHeight + 50;
+            console.log('Scrolling down, delta:', delta);
             container.scrollTo({ top: container.scrollTop + delta, behavior: 'smooth' });
           }
           if (popupTop < 0) {
             const delta = popupTop - 50;
+            console.log('Scrolling up, delta:', delta);
             container.scrollTo({ top: container.scrollTop + delta, behavior: 'smooth' });
           }
         }
