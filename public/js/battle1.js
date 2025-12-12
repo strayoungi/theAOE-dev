@@ -1,18 +1,21 @@
 // Battle RPG Logic
 class Character {
-    constructor(name, hp, mp, atk, def, skills = []) {
+    constructor(name, hp, mp, atk, def, multiplier, skills = []) {
         this.name = name;
         this.maxHp = hp;
         this.hp = hp;
         this.maxMp = mp;
         this.mp = mp;
+        this.baseAtk = atk;
         this.atk = atk;
         this.def = def;
+        this.multiplier = multiplier;
         this.skills = skills;
+        this.buffs = [];
     }
 
     attack(target) {
-        let damage = Math.max(0, this.atk - target.def);
+        let damage = Math.max(0, (this.atk * this.multiplier) - target.def);
         target.hp = Math.max(0, target.hp - damage);
         return damage;
     }
@@ -21,11 +24,37 @@ class Character {
         const skill = this.skills[skillIndex];
         if (this.mp >= skill.mpCost) {
             this.mp -= skill.mpCost;
-            let damage = Math.max(0, skill.damage - target.def);
-            target.hp = Math.max(0, target.hp - damage);
-            return damage;
+            if (skill.effect === 'damage') {
+                let damage = Math.max(0, skill.damage - target.def);
+                target.hp = Math.max(0, target.hp - damage);
+                return damage;
+            } else if (skill.effect === 'heal') {
+                target.hp = Math.min(target.maxHp, target.hp + skill.heal);
+                return skill.heal;
+            } else if (skill.effect === 'buff') {
+                this.buffs.push({ type: skill.buffType, value: skill.buffValue, turns: skill.buffTurns });
+                this.updateStats();
+                return skill.buffValue;
+            }
         }
         return 0;
+    }
+
+    updateStats() {
+        this.atk = this.baseAtk;
+        this.buffs.forEach(buff => {
+            if (buff.type === 'atk_percent') {
+                this.atk = Math.floor(this.baseAtk * (1 + buff.value / 100));
+            }
+        });
+    }
+
+    endTurn() {
+        this.buffs = this.buffs.filter(buff => {
+            buff.turns--;
+            return buff.turns > 0;
+        });
+        this.updateStats();
     }
 }
 
@@ -54,9 +83,17 @@ class Battle {
                 break;
             case 'skill':
                 if (this.selectedSkill !== null) {
-                    const result = player.useSkill(this.selectedSkill, this.enemy);
+                    const skill = player.skills[this.selectedSkill];
+                    const target = (skill.effect === 'heal' || skill.effect === 'buff') ? player : this.enemy;
+                    const result = player.useSkill(this.selectedSkill, target);
                     if (result > 0) {
-                        message += `uses ${player.skills[this.selectedSkill].name} on ${this.enemy.name} for ${result} damage!`;
+                        if (skill.effect === 'damage') {
+                            message += `uses ${skill.name} on ${this.enemy.name} for ${result} damage!`;
+                        } else if (skill.effect === 'heal') {
+                            message += `uses ${skill.name} and heals for ${result} HP!`;
+                        } else if (skill.effect === 'buff') {
+                            message += `uses ${skill.name} and boosts ATK by ${result}%!`;
+                        }
                     } else {
                         message += 'doesn\'t have enough MP!';
                         return;
@@ -77,6 +114,8 @@ class Battle {
     enemyTurn() {
         const damage = this.enemy.attack(this.player);
         this.logMessage(`${this.enemy.name} attacks ${this.player.name} for ${damage} damage!`);
+        this.player.endTurn();
+        this.enemy.endTurn();
         this.checkBattleEnd();
         if (!this.isBattleOver()) {
             this.isPlayerTurn = true;
@@ -150,12 +189,12 @@ class Battle {
 }
 
 // Initialize battle
-const player = new Character('Hero A', 150, 50, 25, 15, [
-    { name: 'Fireball', damage: 40, mpCost: 10 },
-    { name: 'Shadow Strike', damage: 50, mpCost: 12 },
-    { name: 'Flame Burst', damage: 45, mpCost: 10 }
+const player = new Character('Hero A', 150, 50, 25, 15, 0.8, [
+    { name: 'Fireball', effect: 'damage', damage: 40, mpCost: 10 },
+    { name: 'Shadow Strike', effect: 'heal', heal: 30, mpCost: 12 },
+    { name: 'Flame Burst', effect: 'buff', buffType: 'atk_percent', buffValue: 10, buffTurns: 2, mpCost: 10 }
 ]);
-const enemy = new Character('Goblin', 100, 0, 20, 5);
+const enemy = new Character('Goblin', 100, 0, 20, 5, 1.0);
 
 const battle = new Battle(player, enemy);
 
