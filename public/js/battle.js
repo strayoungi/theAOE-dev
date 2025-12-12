@@ -1,6 +1,6 @@
 // Battle RPG Logic
 class Character {
-    constructor(name, hp, mp, atk, def, multiplier, skills = []) {
+    constructor(name, hp, mp, atk, def, attackMultiplier, critRate = 0, critDamage = 1.5, skills = []) {
         this.name = name;
         this.maxHp = hp;
         this.hp = hp;
@@ -10,15 +10,36 @@ class Character {
         this.atk = atk;
         this.baseDef = def;
         this.def = def;
-        this.attackMultiplier = multiplier;
+        this.attackMultiplier = attackMultiplier;
+        this.baseCritRate = critRate;
+        this.critRate = critRate;
+        this.baseCritDamage = critDamage;
+        this.critDamage = critDamage;
+        this.shield = 0;
         this.skills = skills;
         this.buffs = [];
     }
 
     attack(target) {
-        let damage = Math.max(0, (this.atk * this.attackMultiplier) - target.def);
+        let baseDamage = (this.atk * this.attackMultiplier) - target.def;
+        let { damage, isCrit } = this.calculateDamage(baseDamage);
+        let absorbed = 0;
+        if (target.shield > 0) {
+            absorbed = Math.min(damage, target.shield);
+            target.shield -= absorbed;
+            damage -= absorbed;
+        }
         target.hp = Math.max(0, target.hp - damage);
-        return damage;
+        return { damage: damage + absorbed, absorbed, isCrit }; // Total damage attempted
+    }
+
+    calculateDamage(baseDamage) {
+        let isCrit = Math.random() < this.critRate;
+        let damage = baseDamage;
+        if (isCrit) {
+            damage *= this.critDamage;
+        }
+        return { damage: Math.max(0, damage), isCrit };
     }
 
     useSkill(skillIndex, target) {
@@ -26,9 +47,16 @@ class Character {
         if (this.mp >= skill.mpCost) {
             this.mp -= skill.mpCost;
             if (skill.effect === 'damage') {
-                let damage = Math.max(0, (skill.damage * (skill.multiplier || 1)) - target.def);
+                let baseDamage = (skill.damage * (skill.multiplier || 1)) - target.def;
+                let { damage, isCrit } = this.calculateDamage(baseDamage);
+                let absorbed = 0;
+                if (target.shield > 0) {
+                    absorbed = Math.min(damage, target.shield);
+                    target.shield -= absorbed;
+                    damage -= absorbed;
+                }
                 target.hp = Math.max(0, target.hp - damage);
-                return damage;
+                return { damage: damage + absorbed, absorbed, isCrit };
             } else if (skill.effect === 'heal') {
                 target.hp = Math.min(target.maxHp, target.hp + skill.heal);
                 return skill.heal;
@@ -44,11 +72,20 @@ class Character {
     updateStats() {
         this.atk = this.baseAtk;
         this.def = this.baseDef;
+        this.critRate = this.baseCritRate;
+        this.critDamage = this.baseCritDamage;
+        this.shield = 0;
         this.buffs.forEach(buff => {
             if (buff.type === 'atk_percent') {
                 this.atk = Math.floor(this.baseAtk * (1 + buff.value / 100));
             } else if (buff.type === 'def_percent') {
                 this.def = Math.floor(this.baseDef * (1 + buff.value / 100));
+            } else if (buff.type === 'crit_rate_percent') {
+                this.critRate = Math.min(1, this.baseCritRate + buff.value / 100);
+            } else if (buff.type === 'crit_damage_percent') {
+                this.critDamage = this.baseCritDamage * (1 + buff.value / 100);
+            } else if (buff.type === 'shield') {
+                this.shield += buff.value;
             }
         });
     }
@@ -85,8 +122,12 @@ class Battle {
             case 'attack':
                 const targetEnemy = this.enemies[this.selectedTarget];
                 if (targetEnemy && targetEnemy.hp > 0) {
-                    const damage = player.attack(targetEnemy);
-                    message += `attacks ${targetEnemy.name} for ${damage} damage!`;
+                    const result = player.attack(targetEnemy);
+                    message += `attacks ${targetEnemy.name} for ${result.damage} damage!`;
+                    if (result.absorbed > 0) message += ` (${result.absorbed} absorbed by shield!)`;
+                    if (result.isCrit) message += ' (Critical!)';
+                    // Gain 5 MP on normal attack
+                    this.player.mp = Math.min(this.player.maxMp, this.player.mp + 5);
                 } else {
                     message += 'tries to attack but target is defeated!';
                 }
@@ -97,13 +138,21 @@ class Battle {
                     const target = (skill.effect === 'heal' || skill.effect === 'buff') ? player : this.enemies[this.selectedTarget];
                     if (target && (target.hp > 0 || skill.effect === 'heal' || skill.effect === 'buff')) {
                         const result = player.useSkill(this.selectedSkill, target);
-                        if (result > 0) {
+                        if (result > 0 || (typeof result === 'object' && result.damage > 0)) {
                             if (skill.effect === 'damage') {
-                                message += `uses ${skill.name} on ${target.name} for ${result} damage!`;
+                                message += `uses ${skill.name} on ${target.name} for ${result.damage} damage!`;
+                                if (result.absorbed > 0) message += ` (${result.absorbed} absorbed by shield!)`;
+                                if (result.isCrit) message += ' (Critical!)';
                             } else if (skill.effect === 'heal') {
                                 message += `uses ${skill.name} and heals for ${result} HP!`;
                             } else if (skill.effect === 'buff') {
-                                message += `uses ${skill.name} and boosts ${skill.buffType === 'atk_percent' ? 'ATK' : 'DEF'} by ${result}%!`;
+                                let buffDesc = '';
+                                if (skill.buffType === 'atk_percent') buffDesc = 'ATK';
+                                else if (skill.buffType === 'def_percent') buffDesc = 'DEF';
+                                else if (skill.buffType === 'crit_rate_percent') buffDesc = 'Crit Rate';
+                                else if (skill.buffType === 'crit_damage_percent') buffDesc = 'Crit Damage';
+                                else if (skill.buffType === 'shield') buffDesc = 'Shield';
+                                message += `uses ${skill.name} and gains ${buffDesc} of ${result}!`;
                             }
                         } else {
                             message += 'doesn\'t have enough MP!';
@@ -129,8 +178,10 @@ class Battle {
     enemyTurn() {
         this.enemies.forEach((enemy, index) => {
             if (enemy.hp > 0) {
-                const damage = enemy.attack(this.player);
-                this.logMessage(`${enemy.name} attacks ${this.player.name} for ${damage} damage!`);
+                const result = enemy.attack(this.player);
+                let msg = `${enemy.name} attacks ${this.player.name} for ${result.damage} damage!`;
+                if (result.absorbed > 0) msg += ` (${result.absorbed} absorbed by shield!)`;
+                this.logMessage(msg);
             }
         });
         this.player.endTurn();
@@ -210,6 +261,11 @@ class Battle {
         playerCard.querySelector('.stat:nth-child(4)').textContent = `MP: ${this.player.mp} / ${this.player.maxMp}`;
         playerCard.querySelector('.stat:nth-child(5)').textContent = `ATK: ${this.player.atk}`;
         playerCard.querySelector('.stat:nth-child(6)').textContent = `DEF: ${this.player.def}`;
+        if (this.player.shield > 0) {
+            playerCard.querySelector('.stat:nth-child(7)').textContent = `Shield: ${this.player.shield}`;
+        } else {
+            playerCard.querySelector('.stat:nth-child(7)').textContent = '';
+        }
         const playerHealthBar = playerCard.querySelector('.health-bar-fill');
         playerHealthBar.style.width = `${(this.player.hp / this.player.maxHp) * 100}%`;
 
@@ -246,10 +302,12 @@ class Battle {
 }
 
 // Initialize battle
-const player = new Character('Hero A', 150, 50, 25, 15, 0.8, [
+const player = new Character('Hero A', 150, 50, 25, 15, 0.8, 0.2, 1.5, [
     { name: 'Fireball', effect: 'damage', damage: 40, multiplier: 1.2, mpCost: 10 },
     { name: 'Shadow Strike', effect: 'heal', heal: 30, mpCost: 12 },
-    { name: 'Flame Burst', effect: 'buff', buffType: 'def_percent', buffValue: 10, buffTurns: 2, mpCost: 10 }
+    { name: 'Flame Burst', effect: 'buff', buffType: 'def_percent', buffValue: 10, buffTurns: 2, mpCost: 10 },
+    { name: 'Critical Boost', effect: 'buff', buffType: 'crit_rate_percent', buffValue: 20, buffTurns: 2, mpCost: 15 },
+    { name: 'Protective Barrier', effect: 'buff', buffType: 'shield', buffValue: 30, buffTurns: 2, mpCost: 12 }
 ]);
 const enemies = [
     new Character('Goblin', 100, 0, 20, 5, 1.0),
