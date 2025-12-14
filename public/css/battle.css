@@ -4,7 +4,7 @@ body {
     background-color: #2c3e50;
     color: #ecf0f1;
     margin: 0;
-    padding: 20px;
+    padding: 10px;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -14,7 +14,7 @@ body {
 .battle-screen {
     display: flex;
     flex-direction: column;
-    gap: 20px;
+    gap: 10px;
     width: 100%;
     max-width: 1200px;
     height: auto;
@@ -22,7 +22,7 @@ body {
 .enemy-container{
     display: flex;
     flex-direction: row;
-    gap: 20px;
+    gap: 10px;
     justify-content: center;
     align-items: center;
 }
@@ -38,7 +38,7 @@ body {
     background-color: #34495e;
     border: 2px solid #ecf0f1;
     border-radius: 10px;
-    padding: 20px;
+    padding: 10px;
     flex: 1;
     cursor: pointer;
 }
@@ -89,17 +89,26 @@ body {
 
 .health-bar {
     width: 100%;
-    height: 20px;
-    background-color: #7f8c8d;
+    height: 18px;
+    background: #333;
     border-radius: 10px;
     overflow: hidden;
-    margin-top: 5px;
 }
 
 .health-bar-fill {
     height: 100%;
-    background-color: #e74c3c;
+    background: linear-gradient(to right, #4caf50, #2e7d32);
+    display: flex;
+    align-items: center;
+    justify-content: center;
     transition: width 0.3s ease;
+}
+
+.health-text {
+    font-size: 12px;
+    color: #fff;
+    font-weight: bold;
+    text-shadow: 1px 1px 2px #000;
 }
 
 .action-panel {
@@ -119,6 +128,18 @@ body {
     flex-direction: column;
     align-items: center;
     gap: 10px;
+}
+
+.second-action-section{
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.companion-skill {
+    display: flex;
 }
 
 .btn {
@@ -309,7 +330,7 @@ body {
 .popup-buttons {
     margin-top: 20px;
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     gap: 10px;
 }
 
