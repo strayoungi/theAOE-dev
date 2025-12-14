@@ -205,6 +205,7 @@ class Battle {
           player.mp = Math.min(player.maxMp, player.mp + 5);
         } else {
           message += "tries to attack but target is defeated!";
+          alert("Target is already defeated! Choose another enemy.");
         }
         break;
       }
@@ -229,6 +230,7 @@ class Battle {
 
         if (!target || (skill.effect === "damage" && target.hp <= 0)) {
           this.logMessage(`${player.name} invalid target!`);
+          alert("Target is already defeated! Choose another enemy.");
           this.updateUI();
           return;
         }
@@ -396,9 +398,10 @@ class Battle {
 
     // Enemy stats
     const enemyCards = document.querySelectorAll(".enemy-section .status-card");
+    const enemySections = document.querySelectorAll(".enemy-section");
     this.enemies.forEach((enemy, index) => {
       if (enemyCards[index]) {
-        enemyCards[index].querySelector(".name").textContent = enemy.name;
+        enemyCards[index].querySelector(".name").textContent = enemy.hp <= 0 ? `DEAD - ${enemy.name}` : enemy.name;
         enemyCards[index].querySelector(".stat:nth-child(2)").textContent = `HP: ${enemy.hp} / ${enemy.maxHp}`;
         enemyCards[index].querySelector(".stat:nth-child(4)").textContent = `ATK: ${enemy.atk}`;
         enemyCards[index].querySelector(".stat:nth-child(5)").textContent = `DEF: ${enemy.def}`;
@@ -406,17 +409,25 @@ class Battle {
         const enemyHealthBar = enemyCards[index].querySelector(".health-bar-fill");
         updateHP(enemy.hp, enemy.maxHp, enemyHealthBar);
       }
+      if (enemySections[index]) {
+        if (enemy.hp <= 0) {
+          enemySections[index].classList.add("dead");
+        } else {
+          enemySections[index].classList.remove("dead");
+        }
+      }
     });
 
     // Turn indicator
     const turnIndicator = document.querySelector(".turn-indicator");
     turnIndicator.textContent = this.isPlayerTurn ? `${this.player.name}'s turn` : `Enemies' turn`;
 
-    // Selected target visual + disable targeting on enemy turn
+    // Selected target visual + disable targeting on enemy turn or dead enemies
     document.querySelectorAll(".enemy-section").forEach((section, index) => {
       section.classList.toggle("selected", index === this.selectedTarget);
-      section.style.pointerEvents = this.isPlayerTurn ? "auto" : "none";
-      section.style.opacity = this.isPlayerTurn ? "1" : "0.5";
+      const isAlive = this.enemies[index] && this.enemies[index].hp > 0;
+      section.style.pointerEvents = (this.isPlayerTurn && isAlive) ? "auto" : "none";
+      section.style.opacity = this.isPlayerTurn ? (isAlive ? "1" : "0.3") : "0.5";
     });
   }
 
