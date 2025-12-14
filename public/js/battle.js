@@ -377,12 +377,12 @@ class Battle {
     playerCard.querySelector(".name").textContent = this.player.name;
 
     playerCard.querySelector(".stat:nth-child(3)").textContent = `HP: ${this.player.hp} / ${this.player.maxHp}`;
-    playerCard.querySelector(".stat:nth-child(4)").textContent = `MP: ${this.player.mp} / ${this.player.maxMp}`;
-    playerCard.querySelector(".stat:nth-child(5)").textContent = `ATK: ${this.player.atk}`;
-    playerCard.querySelector(".stat:nth-child(6)").textContent = `DEF: ${this.player.def}`;
+    playerCard.querySelector(".stat:nth-child(5)").textContent = `MP: ${this.player.mp} / ${this.player.maxMp}`;
+    playerCard.querySelector(".stat:nth-child(7)").textContent = `ATK: ${this.player.atk}`;
+    playerCard.querySelector(".stat:nth-child(8)").textContent = `DEF: ${this.player.def}`;
 
     // Shield display (show current/cap if cap exists)
-    const shieldStat = playerCard.querySelector(".stat:nth-child(7)");
+    const shieldStat = playerCard.querySelector(".stat:nth-child(9)");
     if (this.player.maxShield > 0) {
       shieldStat.textContent = `Shield: ${this.player.shield} / ${this.player.maxShield}`;
     } else {
@@ -390,7 +390,9 @@ class Battle {
     }
 
     const playerHealthBar = playerCard.querySelector(".health-bar-fill");
-    playerHealthBar.style.width = `${(this.player.hp / this.player.maxHp) * 100}%`;
+    updateHP(this.player.hp, this.player.maxHp, playerHealthBar);
+    const playerManaBar = playerCard.querySelector(".mana-bar-fill");
+    updateMP(this.player.mp, this.player.maxMp, playerManaBar);
 
     // Enemy stats
     const enemyCards = document.querySelectorAll(".enemy-section .status-card");
@@ -398,11 +400,11 @@ class Battle {
       if (enemyCards[index]) {
         enemyCards[index].querySelector(".name").textContent = enemy.name;
         enemyCards[index].querySelector(".stat:nth-child(2)").textContent = `HP: ${enemy.hp} / ${enemy.maxHp}`;
-        enemyCards[index].querySelector(".stat:nth-child(3)").textContent = `ATK: ${enemy.atk}`;
-        enemyCards[index].querySelector(".stat:nth-child(4)").textContent = `DEF: ${enemy.def}`;
+        enemyCards[index].querySelector(".stat:nth-child(4)").textContent = `ATK: ${enemy.atk}`;
+        enemyCards[index].querySelector(".stat:nth-child(5)").textContent = `DEF: ${enemy.def}`;
 
         const enemyHealthBar = enemyCards[index].querySelector(".health-bar-fill");
-        enemyHealthBar.style.width = `${(enemy.hp / enemy.maxHp) * 100}%`;
+        updateHP(enemy.hp, enemy.maxHp, enemyHealthBar);
       }
     });
 
@@ -443,7 +445,44 @@ const enemies = [
 
 const battle = new Battle(player, enemies);
 
-// ===============================
+function updateHP(current, max, barFillEl) {
+  const percent = Math.max(0, (current / max) * 100);
+  barFillEl.style.width = percent + "%";
+
+  // Optional: warna bar
+  if (percent > 60) {
+    barFillEl.style.background = "#4caf50";
+  } else if (percent > 30) {
+    barFillEl.style.background = "#ffc107";
+  } else {
+    barFillEl.style.background = "#f44336";
+  }
+
+  // Text di dalam bar
+  let text = barFillEl.querySelector(".health-text");
+  if (!text) {
+    text = document.createElement("span");
+    text.className = "health-text";
+    barFillEl.appendChild(text);
+  }
+  text.textContent = `${current} / ${max}`;
+}
+
+function updateMP(current, max, barFillEl) {
+  const percent = Math.max(0, (current / max) * 100);
+  barFillEl.style.width = percent + "%";
+  barFillEl.style.background = "#2196f3";
+  // Text di dalam bar
+  let text = barFillEl.querySelector(".mana-text");
+  if (!text) {
+    text = document.createElement("span");
+    text.className = "mana-text";
+    barFillEl.appendChild(text);
+  }
+  text.textContent = `${current} / ${max}`;
+}
+
+  // ===============================
 // Event listeners
 // ===============================
 document.addEventListener("DOMContentLoaded", () => {
